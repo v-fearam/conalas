@@ -1,0 +1,97 @@
+.portfolio {
+  padding: var(--section-padding);
+  background: var(--color-white);
+}
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  color: var(--color-pink);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.subtitle {
+  color: #6B7280;
+  font-size: 1.05rem;
+  margin-bottom: 3rem;
+}
+
+.swiper {
+  padding-bottom: 3rem !important;
+}
+
+.swiper :global(.swiper-button-next),
+.swiper :global(.swiper-button-prev) {
+  color: var(--color-pink);
+  width: 44px;
+  height: 44px;
+}
+
+.swiper :global(.swiper-button-next)::after,
+.swiper :global(.swiper-button-prev)::after {
+  font-size: 1.2rem;
+}
+
+.swiper :global(.swiper-pagination-bullet-active) {
+  background: var(--color-pink);
+}
+
+.card {
+  background: var(--color-white);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #E5E7EB;
+  transition: all var(--transition);
+  text-align: left;
+}
+
+.card:hover {
+  box-shadow: 0 12px 40px rgba(43, 58, 103, 0.1);
+  transform: translateY(-4px);
+}
+
+.cardImage {
+  height: 200px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1rem;
+}
+
+.cardCategory {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.cardBody {
+  padding: 1.25rem;
+}
+
+.cardTitle {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.cardDesc {
+  font-size: 0.875rem;
+  color: #6B7280;
+  line-height: 1.6;
+}
