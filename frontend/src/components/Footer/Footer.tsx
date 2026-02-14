@@ -1,32 +1,8 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FaWhatsapp, FaFacebookF, FaInstagram } from 'react-icons/fa'
 import logo from '../../assets/logos/logo-4.jpeg'
 import styles from './Footer.module.css'
 
-const API_URL = import.meta.env.VITE_API_URL as string
-
-function ApiStatus() {
-  const [status, setStatus] = useState<'checking' | 'ok' | 'error'>('checking')
-
-  useEffect(() => {
-    fetch(`${API_URL}/health`)
-      .then((res) => res.json())
-      .then((data) => setStatus(data.status ? 'ok' : 'error'))
-      .catch(() => setStatus('error'))
-  }, [])
-
-  const color = status === 'ok' ? '#4ade80' : status === 'error' ? '#f87171' : '#fbbf24'
-  const label = status === 'ok' ? 'API OK' : status === 'error' ? 'API DOWN' : 'Checking...'
-
-  return (
-    <div className={styles.apiStatus}>
-      <span className={styles.apiDot} style={{ background: color }} />
-      <span style={{ color }}>{label}</span>
-      <span className={styles.apiUrl}>{API_URL}</span>
-    </div>
-  )
-}
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -82,7 +58,6 @@ export default function Footer() {
 
       <div className={styles.bottom}>
         <p>&copy; {year} Diseño con Alas. Todos los derechos reservados.</p>
-        {import.meta.env.DEV && <ApiStatus />}
       </div>
     </footer>
   )

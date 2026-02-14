@@ -1,83 +1,89 @@
 .services {
   padding: var(--section-padding);
-  background: var(--color-light-bg);
+  background: var(--color-white);
+  position: relative;
 }
 
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
-  text-align: center;
-}
-
-.badge {
-  display: inline-block;
-  color: var(--color-pink);
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.75rem;
-}
-
-.title {
-  font-size: 2.25rem;
-  margin-bottom: 0.75rem;
-}
-
-.subtitle {
-  color: #6B7280;
-  font-size: 1.05rem;
-  margin-bottom: 3rem;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .card {
-  background: var(--color-white);
-  border-radius: 16px;
-  padding: 2rem 1.5rem;
-  text-align: center;
+  background: var(--color-slate-50);
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  text-align: left;
   transition: all var(--transition);
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--color-slate-100);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--color-pink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition);
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(43, 58, 103, 0.1);
-  border-color: var(--color-pink);
+  background: var(--color-white);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-slate-200);
+}
+
+.card:hover::after {
+  transform: scaleX(1);
 }
 
 .iconWrap {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 1.25rem;
-  background: linear-gradient(135deg, rgba(233, 30, 123, 0.1), rgba(78, 205, 196, 0.1));
+  width: 56px;
+  height: 56px;
+  background: var(--color-white);
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   color: var(--color-pink);
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.05);
   transition: all var(--transition);
 }
 
 .card:hover .iconWrap {
   background: var(--color-pink);
   color: var(--color-white);
+  transform: scale(1.1) rotate(5deg);
 }
 
 .cardTitle {
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-navy);
 }
 
 .cardDesc {
-  font-size: 0.9rem;
-  color: #6B7280;
+  font-size: 1rem;
+  color: var(--color-slate-600);
   line-height: 1.6;
 }
 
@@ -90,5 +96,9 @@
 @media (max-width: 640px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 2.5rem 1.5rem;
   }
 }

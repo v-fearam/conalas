@@ -1,7 +1,8 @@
 .footer {
-  background: var(--color-navy);
-  color: rgba(255, 255, 255, 0.8);
+  background: var(--color-slate-50);
+  color: var(--color-navy-light);
   padding: 4rem 1.5rem 0;
+  border-top: 1px solid var(--color-slate-200);
 }
 
 .container {
@@ -11,31 +12,38 @@
   grid-template-columns: 2fr 1fr 1fr;
   gap: 3rem;
   padding-bottom: 3rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--color-slate-200);
 }
 
 .logo {
-  height: 45px;
+  height: 44px;
   width: auto;
-  margin-bottom: 1rem;
-  border-radius: 4px;
+  margin-bottom: 2rem;
+  padding: 8px 16px;
+  background: white;
+  border-radius: 99px;
+  /* Aggressive blending to remove white background from JPEG over light bg */
+  mix-blend-mode: multiply;
+  filter: contrast(1) brightness(1.1);
 }
 
 .tagline {
   font-size: 0.9rem;
-  color: var(--color-teal);
+  color: var(--color-pink);
   margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .location {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-slate-600);
 }
 
 .linksTitle {
-  color: var(--color-white);
+  color: var(--color-navy);
   font-size: 0.95rem;
   margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .links {
@@ -45,7 +53,7 @@
 }
 
 .links a {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-navy-light);
   font-size: 0.9rem;
   transition: color var(--transition);
 }
@@ -63,11 +71,11 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-slate-200);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-white);
+  color: var(--color-navy);
   font-size: 1rem;
   transition: all var(--transition);
 }
@@ -82,35 +90,9 @@
   text-align: center;
   padding: 1.5rem 0;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-slate-400);
 }
 
-.apiStatus {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  font-size: 0.7rem;
-  font-family: monospace;
-}
-
-.apiDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.apiUrl {
-  color: rgba(255, 255, 255, 0.3);
-}
 
 @media (max-width: 768px) {
   .container {

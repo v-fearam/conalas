@@ -1,26 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  /* Brand Colors */
-  --color-navy: #2B3A67;
-  --color-pink: #E91E7B;
-  --color-gold: #F5A623;
-  --color-teal: #4ECDC4;
-  --color-gray: #B0BEC5;
+  /* Refined Color Palette - Happy Pastel */
+  --color-navy: #334155;
+  /* Slate 700 - softer text color */
+  --color-navy-light: #475569;
+  /* Slate 600 */
+  --color-pink: #EC4899;
+  /* Pink 500 - brighter and more "happy" */
+  --color-pink-hover: #DB2777;
+  /* Pink 600 */
+  --color-gold: #FBBF24;
+  /* Amber 400 */
+  --color-teal: #2DD4BF;
+  /* Teal 400 */
   --color-white: #FFFFFF;
-  --color-light-bg: #F8F9FC;
-  --color-dark-bg: #1E2A4A;
+  --color-slate-50: #FFF7F6;
+  /* Extremely soft pastel rose background */
+  --color-slate-100: #FEF2F2;
+  /* Softest pink */
+  --color-slate-200: #FCE7F3;
+  /* Pastel pink highlight */
+  --color-slate-400: #A1A1AA;
+  --color-slate-600: #71717A;
+
+  /* Pastel Specifics */
+  --bg-pastel-blue: #F0F9FF;
+  --bg-pastel-pink: #FDF2F8;
+  --bg-pastel-teal: #F0FDFA;
+  --bg-pastel-green: #F0FDF4;
 
   /* Typography */
   --font-heading: 'Poppins', sans-serif;
   --font-body: 'Inter', sans-serif;
 
   /* Spacing */
-  --section-padding: 5rem 1.5rem;
-  --container-max: 1200px;
+  --section-padding: 6rem 1.5rem;
+  --container-max: 1280px;
+
+  /* Glassmorphism Styles */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-blur: blur(12px);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 
   /* Transitions */
-  --transition: 0.3s ease;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   font-family: var(--font-body);
   line-height: 1.6;
@@ -49,23 +74,30 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  background-color: var(--color-slate-50);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 700;
+  line-height: 1.25;
   color: var(--color-navy);
+  letter-spacing: -0.02em;
 }
 
 a {
   color: var(--color-pink);
   text-decoration: none;
-  transition: color var(--transition);
+  transition: all var(--transition);
 }
 
 a:hover {
-  color: var(--color-teal);
+  color: var(--color-pink-hover);
 }
 
 img {
@@ -79,11 +111,13 @@ button {
   cursor: pointer;
   border: none;
   outline: none;
+  background: none;
+  transition: all var(--transition);
 }
 
 button:focus-visible {
-  outline: 3px solid var(--color-teal);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-pink);
+  outline-offset: 4px;
 }
 
 ul {
@@ -93,5 +127,57 @@ ul {
 input,
 textarea {
   font-family: inherit;
-  font-size: inherit;
+  font-size: 1rem;
+}
+
+/* Glass Utility */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Container Utility */
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Section Header Utility */
+.section-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(244, 63, 94, 0.1);
+  color: var(--color-pink);
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-subtitle {
+  font-size: 1.125rem;
+  color: var(--color-slate-600);
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
 }
