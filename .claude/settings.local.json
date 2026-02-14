@@ -11,5 +11,9 @@
       "Bash(npx tsc:*)",
       "Bash(npx vite:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "supabase"
+  ],
+  "enableAllProjectMcpServers": true
 }

@@ -4,10 +4,10 @@ import { CreateContactDto } from './create-contact.dto';
 
 @Controller('contact')
 export class ContactController {
-  constructor(private readonly contactService: ContactService) {}
+  constructor(private readonly contactService: ContactService) { }
 
   @Post()
-  create(@Body() dto: CreateContactDto): { success: boolean } {
-    return this.contactService.create(dto);
+  async create(@Body() dto: CreateContactDto): Promise<{ success: boolean; error?: string }> {
+    return await this.contactService.create(dto);
   }
 }
