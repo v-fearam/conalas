@@ -1,4 +1,4 @@
-import { FaTag, FaFolderOpen, FaStore, FaBirthdayCake } from 'react-icons/fa'
+import { FaTag, FaPrint, FaStore, FaChurch, FaGift, FaTshirt } from 'react-icons/fa'
 import styles from './Services.module.css'
 
 const services = [
@@ -6,25 +6,37 @@ const services = [
     icon: <FaTag />,
     title: 'Etiquetas Escolares',
     description:
-      'Etiquetas personalizadas para útiles, mochilas y cuadernos. Diseños únicos con el nombre de tu hijo/a.',
+      'Stickers y etiquetas personalizadas para cuadernos, útiles y mochilas con el nombre y diseño que elijas.',
   },
   {
-    icon: <FaFolderOpen />,
-    title: 'Separadores de Carpetas',
+    icon: <FaPrint />,
+    title: 'Cartelería y Almanaques',
     description:
-      'Organizá tus carpetas con separadores diseñados a medida. Ideales para estudiantes y profesionales.',
+      'Carteles publicitarios, almanaques y folletería con diseño profesional para tu negocio o emprendimiento.',
   },
   {
     icon: <FaStore />,
-    title: 'Etiquetas Comerciales',
+    title: 'Papelería Comercial',
     description:
-      'Etiquetas de precios, productos e identificación para tu comercio. Dale una imagen profesional a tu negocio.',
+      'Tarjetas personales, tarjetas de presentación y papelería con identidad visual para comercios.',
   },
   {
-    icon: <FaBirthdayCake />,
-    title: 'Diseños para Eventos',
+    icon: <FaChurch />,
+    title: 'Eventos Religiosos',
     description:
-      'Invitaciones, decoración y diseños especiales para cumpleaños, bautismos y todo tipo de eventos.',
+      'Estampitas, bolsas y souvenirs personalizados para comuniones, bautismos y confirmaciones.',
+  },
+  {
+    icon: <FaGift />,
+    title: 'Souvenirs y Regalos',
+    description:
+      'Llaveros, tarjetas caladas y regalos personalizados para eventos, cumpleaños y fechas especiales.',
+  },
+  {
+    icon: <FaTshirt />,
+    title: 'Indumentaria y Vinilo',
+    description:
+      'Delantales estampados, letras en vinilo recortado y cartelería en vinilo para comercios.',
   },
 ]
 

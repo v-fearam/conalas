@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { FaWhatsapp, FaFacebookF, FaInstagram } from 'react-icons/fa'
 import logo from '../../assets/logos/logo-4.jpeg'
 import styles from './Footer.module.css'
@@ -41,11 +42,11 @@ export default function Footer() {
 
         <div className={styles.links}>
           <h4 className={styles.linksTitle}>Navegación</h4>
-          <a href="#inicio">Inicio</a>
-          <a href="#servicios">Servicios</a>
-          <a href="#portfolio">Portfolio</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#contacto">Contacto</a>
+          <Link to="/">Inicio</Link>
+          <Link to="/servicios">Servicios</Link>
+          <Link to="/portfolio">Portfolio</Link>
+          <Link to="/nosotros">Nosotros</Link>
+          <Link to="/contacto">Contacto</Link>
         </div>
 
         <div className={styles.social}>

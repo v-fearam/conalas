@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
+import { NavLink } from 'react-router-dom'
 import { FaBars, FaTimes } from 'react-icons/fa'
 import logo from '../../assets/logos/logo-4.jpeg'
 import styles from './Header.module.css'
 
 const navLinks = [
-  { label: 'Inicio', href: '#inicio' },
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Portfolio', href: '#portfolio' },
-  { label: 'Nosotros', href: '#nosotros' },
-  { label: 'Contacto', href: '#contacto' },
+  { label: 'Inicio', to: '/' },
+  { label: 'Servicios', to: '/servicios' },
+  { label: 'Portfolio', to: '/portfolio' },
+  { label: 'Nosotros', to: '/nosotros' },
+  { label: 'Contacto', to: '/contacto' },
 ]
 
 export default function Header() {
@@ -26,20 +27,23 @@ export default function Header() {
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.container}>
-        <a href="#inicio" className={styles.logoLink}>
+        <NavLink to="/" className={styles.logoLink}>
           <img src={logo} alt="Diseño con Alas" className={styles.logo} />
-        </a>
+        </NavLink>
 
         <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ''}`}>
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={styles.navLink}
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.to === '/'}
+              className={({ isActive }) =>
+                `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
+              }
               onClick={handleNavClick}
             >
               {link.label}
-            </a>
+            </NavLink>
           ))}
         </nav>
 

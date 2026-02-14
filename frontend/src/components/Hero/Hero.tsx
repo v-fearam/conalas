@@ -1,8 +1,9 @@
+import { Link } from 'react-router-dom'
 import styles from './Hero.module.css'
 
 export default function Hero() {
   return (
-    <section id="inicio" className={styles.hero}>
+    <section className={styles.hero}>
       <div className={styles.overlay} />
       <div className={styles.content}>
         <span className={styles.badge}>Taller de ideas · Comunicación visual</span>
@@ -14,9 +15,9 @@ export default function Hero() {
           Etiquetas escolares, comerciales, diseños para eventos y mucho más.
         </p>
         <p className={styles.location}>General Belgrano, Buenos Aires</p>
-        <a href="#contacto" className={styles.cta}>
+        <Link to="/contacto" className={styles.cta}>
           Contactanos
-        </a>
+        </Link>
       </div>
     </section>
   )

@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form'
 import { FaWhatsapp, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import styles from './Contact.module.css'
 
+const API_URL = import.meta.env.VITE_API_URL as string
+
 interface FormData {
   nombre: string
   email: string
@@ -12,6 +14,8 @@ interface FormData {
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -19,11 +23,24 @@ export default function Contact() {
     reset,
   } = useForm<FormData>()
 
-  const onSubmit = (data: FormData) => {
-    console.log('Form data:', data)
-    setSubmitted(true)
-    reset()
-    setTimeout(() => setSubmitted(false), 5000)
+  const onSubmit = async (data: FormData) => {
+    setSending(true)
+    setSendError(null)
+    try {
+      const res = await fetch(`${API_URL}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) throw new Error('Error al enviar')
+      setSubmitted(true)
+      reset()
+      setTimeout(() => setSubmitted(false), 5000)
+    } catch {
+      setSendError('No se pudo enviar el mensaje. Intentá de nuevo.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -98,13 +115,19 @@ export default function Contact() {
               />
             </div>
 
-            <button type="submit" className={styles.submitBtn}>
-              Enviar mensaje
+            <button type="submit" className={styles.submitBtn} disabled={sending}>
+              {sending ? 'Enviando...' : 'Enviar mensaje'}
             </button>
 
             {submitted && (
               <p className={styles.success}>
                 ¡Mensaje enviado! Nos pondremos en contacto pronto.
+              </p>
+            )}
+
+            {sendError && (
+              <p className={styles.error} style={{ textAlign: 'center' }}>
+                {sendError}
               </p>
             )}
           </form>

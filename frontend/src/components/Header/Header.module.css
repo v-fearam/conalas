@@ -66,6 +66,14 @@
   width: 100%;
 }
 
+.navLinkActive {
+  color: var(--color-pink);
+}
+
+.navLinkActive::after {
+  width: 100%;
+}
+
 .menuBtn {
   display: none;
   background: none;

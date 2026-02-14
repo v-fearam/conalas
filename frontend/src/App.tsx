@@ -1,25 +1,30 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/Header/Header'
-import Hero from './components/Hero/Hero'
-import Services from './components/Services/Services'
-import Portfolio from './components/Portfolio/Portfolio'
-import About from './components/About/About'
-import Contact from './components/Contact/Contact'
 import Footer from './components/Footer/Footer'
+import ScrollToTop from './components/ScrollToTop'
+import HomePage from './pages/HomePage'
+import ServiciosPage from './pages/ServiciosPage'
+import PortfolioPage from './pages/PortfolioPage'
+import NosotrosPage from './pages/NosotrosPage'
+import ContactoPage from './pages/ContactoPage'
 import './App.css'
 
 function App() {
   return (
-    <>
+    <BrowserRouter>
+      <ScrollToTop />
       <Header />
       <main>
-        <Hero />
-        <Services />
-        <Portfolio />
-        <About />
-        <Contact />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/servicios" element={<ServiciosPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/nosotros" element={<NosotrosPage />} />
+          <Route path="/contacto" element={<ContactoPage />} />
+        </Routes>
       </main>
       <Footer />
-    </>
+    </BrowserRouter>
   )
 }
 
