@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Turnstile, type TurnstileInstance } from 'react-turnstile'
 import { FaWhatsapp, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import styles from './Contact.module.css'
 
 const API_URL = import.meta.env.VITE_API_URL as string
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string
 
 interface FormData {
   nombre: string
@@ -16,6 +18,9 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileInstance>(null)
+
   const {
     register,
     handleSubmit,
@@ -24,20 +29,29 @@ export default function Contact() {
   } = useForm<FormData>()
 
   const onSubmit = async (data: FormData) => {
+    if (!turnstileToken) {
+      setSendError('Por favor, completá la verificación de seguridad.')
+      return
+    }
+
     setSending(true)
     setSendError(null)
     try {
       const res = await fetch(`${API_URL}/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, turnstileToken }),
       })
       if (!res.ok) throw new Error('Error al enviar')
       setSubmitted(true)
       reset()
+      setTurnstileToken(null)
+      turnstileRef.current?.reset()
       setTimeout(() => setSubmitted(false), 5000)
     } catch {
       setSendError('No se pudo enviar el mensaje. Intentá de nuevo.')
+      setTurnstileToken(null)
+      turnstileRef.current?.reset()
     } finally {
       setSending(false)
     }
@@ -61,6 +75,7 @@ export default function Contact() {
               <input
                 id="nombre"
                 type="text"
+                maxLength={100}
                 className={`${styles.input} ${errors.nombre ? styles.inputError : ''}`}
                 placeholder="Tu nombre"
                 {...register('nombre', { required: 'El nombre es obligatorio' })}
@@ -73,6 +88,7 @@ export default function Contact() {
               <input
                 id="email"
                 type="email"
+                maxLength={254}
                 className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
                 placeholder="tu@email.com"
                 {...register('email', {
@@ -108,6 +124,7 @@ export default function Contact() {
               <label htmlFor="mensaje" className={styles.label}>Mensaje</label>
               <textarea
                 id="mensaje"
+                maxLength={2000}
                 className={styles.textarea}
                 placeholder="Contanos sobre tu proyecto..."
                 rows={4}
@@ -115,7 +132,22 @@ export default function Contact() {
               />
             </div>
 
-            <button type="submit" className={styles.submitBtn} disabled={sending}>
+            <div className={styles.turnstile}>
+              <Turnstile
+                ref={turnstileRef}
+                sitekey={TURNSTILE_SITE_KEY}
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken(null)}
+                onError={() => setTurnstileToken(null)}
+                theme="light"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={sending || !turnstileToken}
+            >
               {sending ? 'Enviando...' : 'Enviar mensaje'}
             </button>
 

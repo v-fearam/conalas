@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CreateContactDto } from './create-contact.dto';
 import { SupabaseService } from './supabase.service';
 
@@ -6,15 +7,22 @@ import { SupabaseService } from './supabase.service';
 export class ContactService {
   private readonly logger = new Logger(ContactService.name);
 
-  constructor(private readonly supabaseService: SupabaseService) { }
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  async create(dto: CreateContactDto): Promise<{ success: boolean; error?: string }> {
-    this.logger.log('--- Nuevo mensaje de contacto ---');
-    this.logger.log(`Nombre:   ${dto.nombre}`);
-    this.logger.log(`Email:    ${dto.email}`);
-    this.logger.log(`Teléfono: ${dto.telefono}`);
-    this.logger.log(`Mensaje:  ${dto.mensaje ?? '(vacío)'}`);
-    this.logger.log('--- Fin del mensaje ---');
+  async create(
+    dto: CreateContactDto,
+  ): Promise<{ success: boolean; error?: string }> {
+    const turnstileValid = await this.verifyTurnstile(dto.turnstileToken);
+    if (!turnstileValid) {
+      throw new BadRequestException(
+        'La verificación CAPTCHA falló. Intentá de nuevo.',
+      );
+    }
+
+    this.logger.log('Nuevo mensaje de contacto recibido');
 
     const { error } = await this.supabaseService
       .getClient()
@@ -29,10 +37,50 @@ export class ContactService {
       ]);
 
     if (error) {
-      this.logger.error(`Error saving to Supabase: ${error.message}`);
-      return { success: false, error: error.message };
+      this.logger.error('Error guardando contacto en Supabase', error.message);
+      return {
+        success: false,
+        error: 'No se pudo enviar el mensaje. Intentá de nuevo más tarde.',
+      };
     }
 
+    this.logger.log('Contacto guardado exitosamente');
     return { success: true };
+  }
+
+  private async verifyTurnstile(token: string): Promise<boolean> {
+    const secret = this.configService.get<string>('TURNSTILE_SECRET_KEY');
+    if (!secret) {
+      this.logger.error('TURNSTILE_SECRET_KEY no configurada');
+      return false;
+    }
+
+    try {
+      const response = await fetch(
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ secret, response: token }),
+        },
+      );
+
+      const result = (await response.json()) as {
+        success: boolean;
+        'error-codes'?: string[];
+      };
+
+      if (!result.success) {
+        this.logger.warn(
+          'Turnstile verification failed',
+          result['error-codes'],
+        );
+      }
+
+      return result.success;
+    } catch (err) {
+      this.logger.error('Error calling Turnstile API', err);
+      return false;
+    }
   }
 }

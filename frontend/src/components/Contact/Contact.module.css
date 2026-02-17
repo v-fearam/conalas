@@ -71,6 +71,12 @@
   margin-top: 0.25rem;
 }
 
+.turnstile {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
 .submitBtn {
   background: var(--color-pink);
   color: var(--color-white);
