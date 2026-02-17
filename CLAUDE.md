@@ -130,3 +130,39 @@ Multi-page app using React Router. Each section is a separate route.
 ## Debugging
 
 VS Code launch config in `.vscode/launch.json` — select "Debug Backend" and press F5 to debug NestJS with breakpoints.
+
+## Task Routing Rules
+
+When processing a user request, match it against the rules below and delegate to the appropriate skill or subagent. If multiple match, pick the most specific one. If none match, handle the task directly.
+
+### Skills (invoke via `Skill` tool)
+
+| Skill | Trigger When | Examples |
+|-------|-------------|----------|
+| `nestjs-expert` | Any work inside `backend/`: new modules, controllers, services, DTOs, guards, interceptors, pipes, middleware, DI issues, NestJS testing, NestJS debugging | "add a new endpoint", "fix dependency injection error", "create a guard for auth", "write unit tests for contact service" |
+| `ui-ux-pro-max` | UI/UX design decisions, choosing styles/palettes/fonts, building or reviewing visual components, accessibility audits, design system generation, landing page design | "choose a color palette", "review this component for UX issues", "make the hero section more engaging", "generate a design system", "check accessibility" |
+| `vercel-react-best-practices` | Writing, reviewing, or optimizing React components in `frontend/`: performance, re-renders, bundle size, data fetching, hooks patterns | "optimize this component", "reduce bundle size", "fix re-render issue", "review this React code for performance", "implement lazy loading" |
+| `postgresql-table-design` | Designing new database tables, choosing column types, defining constraints, indexing strategy, schema migrations | "design the users table", "what data type for prices", "add an index", "create a schema for orders" |
+| `supabase-postgres-best-practices` | Optimizing existing SQL queries, connection pooling, RLS policies, monitoring/diagnostics, locking issues, Supabase-specific Postgres config | "this query is slow", "set up row-level security", "configure connection pooling", "analyze query plan" |
+| `nextjs-supabase-auth` | Authentication with Supabase + Next.js: login/signup flows, auth middleware, protected routes, OAuth callbacks, session handling | "add Supabase auth", "protect this route", "implement login with Google", "set up auth middleware" |
+| `find-skills` | User asks for a capability that no installed skill covers, or explicitly asks to find/install a skill | "is there a skill for X", "find a skill for deployment", "can you do X" (when X is outside current skill coverage) |
+| `keybindings-help` | Customizing Claude Code keyboard shortcuts | "rebind ctrl+s", "change the submit key", "customize keybindings" |
+
+### Subagents (invoke via `Task` tool)
+
+| Subagent | Trigger When | Examples |
+|----------|-------------|----------|
+| `Explore` | Broad codebase exploration, finding patterns across many files, understanding how a feature works end-to-end, when simple Glob/Grep won't suffice (needs 3+ queries) | "how does routing work in this project", "find all places that call the API", "understand the auth flow" |
+| `Plan` | Designing implementation strategy for non-trivial features before writing code, architectural trade-off analysis | "plan how to add user accounts", "what's the best approach to add payments" |
+| `Bash` | Running shell commands: git operations, npm scripts, builds, dev servers, system tasks | "run the tests", "start the backend", "install a package", "check git log" |
+| `general-purpose` | Multi-step research tasks, searching for code across the codebase when unsure of location, complex investigations | "investigate why the build fails", "find and summarize all API endpoints", "research how Swiper is configured" |
+| `claude-code-guide` | Questions about Claude Code itself: features, settings, hooks, MCP servers, IDE integrations, Agent SDK, Anthropic API | "how do I configure hooks", "does Claude Code support X", "how to use MCP servers" |
+
+### Routing Priority
+
+1. **Exact domain match** — If the request clearly falls within one skill's domain, use that skill.
+2. **Backend vs Frontend** — Requests about `backend/` go to `nestjs-expert`; requests about `frontend/` components/pages first check `vercel-react-best-practices` (for perf) or `ui-ux-pro-max` (for design).
+3. **Database** — Schema design goes to `postgresql-table-design`; query optimization and Supabase config go to `supabase-postgres-best-practices`.
+4. **Exploration before action** — For ambiguous requests, use `Explore` subagent first to understand the codebase, then delegate to the appropriate skill.
+5. **Direct handling** — Simple edits (rename a variable, fix a typo, add a comment) don't need delegation. Just do them.
+6. **Skill discovery** — If the user needs a capability not covered by any installed skill, use `find-skills` to search the ecosystem.
