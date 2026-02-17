@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Turnstile, type TurnstileInstance } from 'react-turnstile'
+import { Turnstile, type BoundTurnstileObject } from 'react-turnstile'
 import { FaWhatsapp, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import styles from './Contact.module.css'
 
@@ -19,7 +19,7 @@ export default function Contact() {
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState<string | null>(null)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
-  const turnstileRef = useRef<TurnstileInstance>(null)
+  const turnstileRef = useRef<BoundTurnstileObject | null>(null)
 
   const {
     register,
@@ -134,9 +134,11 @@ export default function Contact() {
 
             <div className={styles.turnstile}>
               <Turnstile
-                ref={turnstileRef}
                 sitekey={TURNSTILE_SITE_KEY}
-                onVerify={(token) => setTurnstileToken(token)}
+                onVerify={(token, boundTurnstile) => {
+                  turnstileRef.current = boundTurnstile
+                  setTurnstileToken(token)
+                }}
                 onExpire={() => setTurnstileToken(null)}
                 onError={() => setTurnstileToken(null)}
                 theme="light"

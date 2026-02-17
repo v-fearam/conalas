@@ -94,13 +94,15 @@ cd frontend && npx tsc --noEmit
 
 Modular architecture: each feature gets its own module folder under `src/`.
 
-- `main.ts` — bootstrap with CORS + global `ValidationPipe(whitelist, transform)`
-- `app.module.ts` — root module, imports feature modules
+- `main.ts` — bootstrap with Helmet, CORS (restricted via `CORS_ORIGIN` env var) + global `ValidationPipe(whitelist, transform)`
+- `app.module.ts` — root module, imports feature modules, global rate limiting via `@nestjs/throttler` (10 req/min, 50 req/hour per IP)
 - Feature modules follow the pattern: `src/<feature>/` containing `<feature>.module.ts`, `<feature>.controller.ts`, `<feature>.service.ts`, and DTOs
-- DTOs use `class-validator` decorators for request validation
+- DTOs use `class-validator` decorators for request validation (including `@MaxLength`)
 - Port configured via `process.env.PORT` (default 3000)
 
 **Current modules**: AppModule (health check), ContactModule (POST /contact)
+
+**Security**: Helmet (HTTP headers), `@nestjs/throttler` (rate limiting), Cloudflare Turnstile (CAPTCHA)
 
 ### Frontend (React 19 + Vite 7)
 
@@ -108,9 +110,9 @@ Multi-page app using React Router. Each section is a separate route.
 
 - **Routing**: `BrowserRouter` in App.tsx, pages in `src/pages/`, components in `src/components/<Name>/`
 - **Styling**: CSS Modules colocated with components, global CSS vars in `index.css`
-- **Env**: `VITE_API_URL` in `.env` configures backend URL
+- **Env**: `VITE_API_URL` and `VITE_TURNSTILE_SITE_KEY` in `.env`
 - **Dev indicator**: Footer shows API health status in dev mode only (`import.meta.env.DEV`)
-- **Libraries**: react-router-dom (routing), Swiper (carousel), react-hook-form (forms), react-icons (icons)
+- **Libraries**: react-router-dom (routing), Swiper (carousel), react-hook-form (forms), react-icons (icons), react-turnstile (CAPTCHA)
 - **Assets**: logos in `src/assets/logos/`, portfolio images in `src/assets/portfolio/`
 
 ### API Contract
@@ -118,7 +120,7 @@ Multi-page app using React Router. Each section is a separate route.
 | Endpoint | Method | Body | Response |
 |----------|--------|------|----------|
 | `/health` | GET | — | `{ status: boolean }` |
-| `/contact` | POST | `{ nombre, email, telefono, mensaje? }` | `{ success: boolean }` |
+| `/contact` | POST | `{ nombre, email, telefono, mensaje?, turnstileToken }` | `{ success: boolean }` |
 
 ## Code Style
 
@@ -130,6 +132,31 @@ Multi-page app using React Router. Each section is a separate route.
 ## Debugging
 
 VS Code launch config in `.vscode/launch.json` — select "Debug Backend" and press F5 to debug NestJS with breakpoints.
+
+## Security
+
+### Cloudflare Turnstile (CAPTCHA)
+
+The contact form is protected by [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/). Flow: frontend widget generates a token using the public Site Key → token is sent with the form POST → backend verifies the token against Cloudflare's `siteverify` API using the private Secret Key → only valid tokens allow the contact to be saved.
+
+| Env Variable | Where | Purpose |
+|-------------|-------|---------|
+| `VITE_TURNSTILE_SITE_KEY` | `frontend/.env` | Public key — identifies the widget to Cloudflare |
+| `TURNSTILE_SECRET_KEY` | `backend/.env` | Private key — backend uses it to verify tokens with Cloudflare |
+| `CORS_ORIGIN` | `backend/.env` | Allowed frontend origin(s), comma-separated |
+
+**Dev keys** (always pass): Site `1x00000000000000000000AA`, Secret `1x0000000000000000000000000000000AA`
+
+**Production keys**: Set real keys from the [Cloudflare Turnstile dashboard](https://dash.cloudflare.com/?to=/:account/turnstile) as Vercel environment variables.
+
+### Other Protections
+
+- **Helmet** (`main.ts`): HTTP security headers (X-Content-Type-Options, X-Frame-Options, HSTS, etc.)
+- **Rate limiting** (`app.module.ts`): Global 10 req/min + 50 req/hour; POST /contact stricter at 3 req/min + 10 req/hour
+- **CORS** (`main.ts`): Restricted to `CORS_ORIGIN` env var (defaults to `http://localhost:5173`)
+- **Input validation**: `@MaxLength` on all DTO fields, `whitelist: true` strips unknown properties
+- **Error sanitization**: Supabase errors logged server-side only, generic messages returned to client
+- **No PII in logs**: Contact data (name, email, phone) is never written to stdout
 
 ## Task Routing Rules
 
