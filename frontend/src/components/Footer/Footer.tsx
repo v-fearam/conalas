@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom'
-import { FaWhatsapp, FaFacebookF, FaInstagram } from 'react-icons/fa'
+import { SOCIAL_LINKS } from '../../constants/site'
 import logo from '../../assets/logos/logo-4.jpeg'
 import styles from './Footer.module.css'
-
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -16,42 +14,20 @@ export default function Footer() {
           <p className={styles.location}>General Belgrano, Buenos Aires, Argentina</p>
         </div>
 
-        <div className={styles.links}>
-          <h4 className={styles.linksTitle}>Navegación</h4>
-          <Link to="/">Inicio</Link>
-          <Link to="/servicios">Servicios</Link>
-          <Link to="/portfolio">Portfolio</Link>
-          <Link to="/nosotros">Nosotros</Link>
-          <Link to="/contacto">Contacto</Link>
-        </div>
-
         <div className={styles.social}>
           <h4 className={styles.linksTitle}>Redes sociales</h4>
           <div className={styles.socialIcons}>
-            <a
-              href="https://www.facebook.com/disenio.con.alas"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-            >
-              <FaFacebookF />
-            </a>
-            <a
-              href="https://wa.me/542243401378"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="WhatsApp"
-            >
-              <FaWhatsapp />
-            </a>
-            <a
-              href="https://www.instagram.com/disenio.con.alas"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-            >
-              <FaInstagram />
-            </a>
+            {SOCIAL_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={link.label}
+              >
+                <link.icon />
+              </a>
+            ))}
           </div>
         </div>
       </div>

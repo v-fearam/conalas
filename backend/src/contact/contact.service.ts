@@ -1,7 +1,12 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CreateContactDto } from './create-contact.dto';
-import { SupabaseService } from './supabase.service';
+import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
 export class ContactService {
@@ -12,9 +17,7 @@ export class ContactService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create(
-    dto: CreateContactDto,
-  ): Promise<{ success: boolean; error?: string }> {
+  async create(dto: CreateContactDto): Promise<{ success: boolean }> {
     const turnstileValid = await this.verifyTurnstile(dto.turnstileToken);
     if (!turnstileValid) {
       throw new BadRequestException(
@@ -38,10 +41,9 @@ export class ContactService {
 
     if (error) {
       this.logger.error('Error guardando contacto en Supabase', error.message);
-      return {
-        success: false,
-        error: 'No se pudo enviar el mensaje. Intentá de nuevo más tarde.',
-      };
+      throw new InternalServerErrorException(
+        'No se pudo enviar el mensaje. Intentá de nuevo más tarde.',
+      );
     }
 
     this.logger.log('Contacto guardado exitosamente');

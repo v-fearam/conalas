@@ -9,7 +9,7 @@ export class ContactController {
 
   @Post()
   @Throttle({ short: { ttl: 60000, limit: 3 }, long: { ttl: 3600000, limit: 10 } })
-  async create(@Body() dto: CreateContactDto): Promise<{ success: boolean; error?: string }> {
+  async create(@Body() dto: CreateContactDto): Promise<{ success: boolean }> {
     return await this.contactService.create(dto);
   }
 }

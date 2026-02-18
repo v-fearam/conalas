@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Turnstile, type BoundTurnstileObject } from 'react-turnstile'
-import { FaWhatsapp, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
+import { SOCIAL_LINKS, ADDRESS, PHONE } from '../../constants/site'
 import styles from './Contact.module.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? ''
@@ -174,44 +175,29 @@ export default function Contact() {
 
               <div className={styles.infoItem}>
                 <FaMapMarkerAlt className={styles.infoIcon} />
-                <span>General Belgrano, Buenos Aires, Argentina</span>
+                <span>{ADDRESS}</span>
               </div>
 
               <div className={styles.infoItem}>
                 <FaPhone className={styles.infoIcon} />
-                <span>2243401378</span>
+                <span>{PHONE}</span>
               </div>
 
               <h3 className={styles.socialTitle}>Seguinos en redes</h3>
 
               <div className={styles.socials}>
-                <a
-                  href="https://www.facebook.com/disenio.con.alas"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.socialLink}
-                  aria-label="Facebook"
-                >
-                  <FaFacebookF />
-                </a>
-                <a
-                  href="https://wa.me/542243401378"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.socialLink}
-                  aria-label="WhatsApp"
-                >
-                  <FaWhatsapp />
-                </a>
-                <a
-                  href="https://www.instagram.com/disenio.con.alas"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.socialLink}
-                  aria-label="Instagram"
-                >
-                  <FaInstagram />
-                </a>
+                {SOCIAL_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.socialLink}
+                    aria-label={link.label}
+                  >
+                    <link.icon />
+                  </a>
+                ))}
               </div>
             </div>
           </div>

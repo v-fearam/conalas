@@ -8,8 +8,9 @@
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
   gap: 3rem;
   padding-bottom: 3rem;
   border-bottom: 1px solid var(--color-slate-200);
@@ -22,7 +23,6 @@
   padding: 8px 16px;
   background: white;
   border-radius: 99px;
-  /* Aggressive blending to remove white background from JPEG over light bg */
   mix-blend-mode: multiply;
   filter: contrast(1) brightness(1.1);
 }
@@ -44,22 +44,6 @@
   font-size: 0.95rem;
   margin-bottom: 1rem;
   font-weight: 600;
-}
-
-.links {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.links a {
-  color: var(--color-navy-light);
-  font-size: 0.9rem;
-  transition: color var(--transition);
-}
-
-.links a:hover {
-  color: var(--color-pink);
 }
 
 .socialIcons {
@@ -93,12 +77,12 @@
   color: var(--color-slate-400);
 }
 
-
 @media (max-width: 768px) {
   .container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    gap: 2rem;
   }
 
   .socialIcons {

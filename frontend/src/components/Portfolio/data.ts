@@ -1,0 +1,86 @@
+export const portfolioItems = [
+  {
+    title: 'Llaveros Personalizados',
+    category: 'Souvenirs',
+    description: 'Llaveros con nombre y diseño personalizado, ideales como souvenir para eventos y regalos.',
+    image: '/portfolio/llaveros.jpg',
+  },
+  {
+    title: 'Delantales para Negocios',
+    category: 'Indumentaria Comercial',
+    description: 'Delantales estampados con logo y marca para comercios locales como La Granjita.',
+    image: '/portfolio/Delantal1.jpg',
+  },
+  {
+    title: 'Stickers para Cuadernos',
+    category: 'Etiquetas Escolares',
+    description: 'Stickers personalizados para tapas de cuadernos con nombre, grado y diseño temático.',
+    image: '/portfolio/StikerTapasCuaderno.jpg',
+  },
+  {
+    title: 'Kit Comunión Ornella',
+    category: 'Eventos Religiosos',
+    description: 'Estampitas, bolsas y souvenirs personalizados para Primera Comunión.',
+    image: '/portfolio/EstampitasYBolsaComunion.jpg',
+  },
+  {
+    title: 'Cartelería Comercial',
+    category: 'Cartelería',
+    description: 'Diseño de carteles publicitarios para comercios locales con identidad visual completa.',
+    image: '/portfolio/Cartel1.jpg',
+  },
+  {
+    title: 'Almanaques Personalizados',
+    category: 'Cartelería',
+    description: 'Almanaques con diseño a medida para negocios, con datos de contacto y branding.',
+    image: '/portfolio/Almanaque1.jpg',
+  },
+  {
+    title: 'Tarjetas y Bolsas',
+    category: 'Papelería Comercial',
+    description: 'Tarjetas caladas con mensajes personalizados, ideales para fin de año y fechas especiales.',
+    image: '/portfolio/TarjetaBolsaNegocio.jpg',
+  },
+  {
+    title: 'Vinilo y Cartelería',
+    category: 'Cartelería',
+    description: 'Diseño de marca y cartelería en vinilo para vidriera y espacios comerciales.',
+    image: '/portfolio/ViniloCartel.jpg',
+  },
+  {
+    title: 'Letras en Vinilo Recortado',
+    category: 'Cartelería',
+    description: 'Letras y logos en vinilo de corte para frascos, vidrieras y decoración de espacios.',
+    image: '/portfolio/LetrasViniloRecortadas.jpg',
+  },
+  {
+    title: 'Tarjetas Personales',
+    category: 'Papelería Comercial',
+    description: 'Tarjetas de presentación profesionales con diseño personalizado para emprendedores.',
+    image: '/portfolio/TarjetasPersonales1.jpg',
+  },
+  {
+    title: 'Delantal Cafetería',
+    category: 'Indumentaria Comercial',
+    description: 'Delantales personalizados con tipografía y marca para cafeterías y restaurantes.',
+    image: '/portfolio/Delantal2.jpg',
+  },
+  {
+    title: 'Sticker Escolar Temático',
+    category: 'Etiquetas Escolares',
+    description: 'Etiquetas escolares con personajes y diseño colorido para identificar útiles y carpetas.',
+    image: '/portfolio/StikerTapaCuaderno2.jpg',
+  },
+  {
+    title: 'Comunión Floral',
+    category: 'Eventos Religiosos',
+    description: 'Kit completo de comunión con diseño floral: estampitas, bolsas y señaladores.',
+    image: '/portfolio/EstampitasYBolsaComunion2.jpg',
+  },
+  {
+    title: 'Comunión Celeste',
+    category: 'Eventos Religiosos',
+    description: 'Estampitas y bolsas para comunión con diseño elegante en tonos celeste y dorado.',
+    image: '/portfolio/EstampitasYBolsaComunion3.jpg',
+  },
+]

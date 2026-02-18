@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SupabaseModule } from './supabase/supabase.module';
 import { ContactModule } from './contact/contact.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { ContactModule } from './contact/contact.module';
         { name: 'long', ttl: 3600000, limit: 50 },
       ],
     }),
+    SupabaseModule,
     ContactModule,
   ],
   controllers: [AppController],

@@ -5,8 +5,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: #FFF7F6;
-  /* Extremely soft pastel rose background */
+  background: var(--color-slate-50);
   background-image:
     radial-gradient(at 0% 0%, rgba(251, 113, 133, 0.1) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(45, 212, 191, 0.1) 0px, transparent 50%),
@@ -28,7 +27,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 0%, #FFF7F6 100%);
+  background: radial-gradient(circle at center, transparent 0%, var(--color-slate-50) 100%);
   opacity: 0.4;
 }
 
@@ -65,7 +64,7 @@
 }
 
 .accent {
-  background: linear-gradient(to right, #EC4899, #DB2777);
+  background: linear-gradient(to right, var(--color-pink), var(--color-pink-hover));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
