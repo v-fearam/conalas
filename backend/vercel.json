@@ -9,20 +9,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "methods": ["OPTIONS"],
-            "headers": {
-                "Access-Control-Allow-Origin": "https://conalas-frontend.vercel.app",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
-            },
             "dest": "src/main.ts"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "src/main.ts",
-            "headers": {
-                "Access-Control-Allow-Origin": "https://conalas-frontend.vercel.app"
-            }
         }
     ]
 }

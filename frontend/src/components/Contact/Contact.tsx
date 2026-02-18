@@ -4,8 +4,8 @@ import { Turnstile, type BoundTurnstileObject } from 'react-turnstile'
 import { FaWhatsapp, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import styles from './Contact.module.css'
 
-const API_URL = import.meta.env.VITE_API_URL as string
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string
+const API_URL = import.meta.env.VITE_API_URL ?? ''
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? ''
 
 interface FormData {
   nombre: string
@@ -153,17 +153,19 @@ export default function Contact() {
               {sending ? 'Enviando...' : 'Enviar mensaje'}
             </button>
 
-            {submitted && (
-              <p className={styles.success}>
-                ¡Mensaje enviado! Nos pondremos en contacto pronto.
-              </p>
-            )}
+            <div aria-live="polite">
+              {submitted && (
+                <p className={styles.success}>
+                  ¡Mensaje enviado! Nos pondremos en contacto pronto.
+                </p>
+              )}
 
-            {sendError && (
-              <p className={styles.error} style={{ textAlign: 'center' }}>
-                {sendError}
-              </p>
-            )}
+              {sendError && (
+                <p className={styles.error} style={{ textAlign: 'center' }}>
+                  {sendError}
+                </p>
+              )}
+            </div>
           </form>
 
           <div className={styles.info}>
