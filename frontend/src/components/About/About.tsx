@@ -6,17 +6,17 @@ export default function About() {
     <section id="nosotros" className={styles.about}>
       <div className={styles.container}>
         <div className={styles.text}>
-          <span className={styles.badge}>Sobre Nosotros</span>
-          <h2 className={styles.title}>Diseño con Alas</h2>
+          <span className={styles.badge}>Nuestra Historia</span>
+          <h2 className={styles.title}>Diseño con Alas: Pasión en Familia</h2>
           <p className={styles.description}>
-            Somos un taller de ideas y comunicación visual en General Belgrano, Buenos Aires.
-            Nos especializamos en crear diseños personalizados que hacen que cada producto
-            sea especial y único.
+            Somos un taller familiar nacido en General Belgrano, impulsado por el deseo de ponerle alas a la creatividad.
+            Creeremos que los mejores resultados nacen de la dedicación y el trato cercano, por eso cada proyecto que llega
+            a nuestras manos recibe toda nuestra atención y cariño.
           </p>
           <p className={styles.description}>
-            Desde etiquetas escolares hasta diseños para eventos, nuestro compromiso es
-            brindar un servicio cercano, creativo y de calidad. Trabajamos codo a codo con
-            cada cliente para que el resultado final supere sus expectativas.
+            Nuestra misión es brindarte soluciones creativas que reflejen tu esencia.
+            Nos enorgullece ser parte de tu crecimiento, ya sea impulsando la imagen de tu negocio
+            o creando los detalles para los eventos más importantes de tu vida. Estamos acá para escucharte y crear juntos.
           </p>
         </div>
         <div className={styles.values}>

@@ -13,7 +13,7 @@ export default function Portfolio() {
         <span className={styles.badge}>Portfolio</span>
         <h2 className={styles.title}>Nuestros trabajos</h2>
         <p className={styles.subtitle}>
-          Una muestra de lo que creamos con dedicación y creatividad
+          Una muestra de los proyectos que realizamos con dedicación y amor por lo que hacemos.
         </p>
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}

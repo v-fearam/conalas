@@ -16,47 +16,54 @@ conalas/
 │
 ├── backend/                              # NestJS 11 API
 │   ├── src/
-│   │   ├── main.ts                       # Bootstrap (CORS, ValidationPipe)
-│   │   ├── app.module.ts                 # Root module
+│   │   ├── main.ts                       # Bootstrap (Helmet, CORS, ValidationPipe, body limit)
+│   │   ├── app.module.ts                 # Root module (imports SupabaseModule, ThrottlerModule)
 │   │   ├── app.controller.ts             # GET /health
 │   │   ├── app.service.ts
 │   │   ├── app.controller.spec.ts
+│   │   ├── supabase/                     # @Global() shared module
+│   │   │   ├── supabase.module.ts
+│   │   │   └── supabase.service.ts       # Supabase client wrapper
 │   │   └── contact/                      # Contact feature module
 │   │       ├── contact.module.ts
 │   │       ├── contact.controller.ts     # POST /contact
-│   │       ├── contact.service.ts
-│   │       └── create-contact.dto.ts     # Validation with class-validator
+│   │       ├── contact.service.ts        # Turnstile verification + Supabase insert
+│   │       └── create-contact.dto.ts     # Validation with class-validator + @MaxLength
 │   ├── test/                             # E2E tests
 │   ├── package.json
 │   └── tsconfig.json
 │
 ├── frontend/                             # React 19 + Vite 7
-│   ├── .env                              # VITE_API_URL
-│   ├── index.html                        # Entry point, favicon, title
+│   ├── .env                              # VITE_API_URL, VITE_TURNSTILE_SITE_KEY
+│   ├── index.html                        # Entry point, CSP meta tag, favicon
 │   ├── vite.config.ts
+│   ├── public/
+│   │   └── portfolio/                    # Portfolio images (14 photos, served statically)
 │   ├── src/
 │   │   ├── main.tsx                      # React entry
-│   │   ├── App.tsx                       # BrowserRouter + Routes
+│   │   ├── App.tsx                       # BrowserRouter + Routes (incl. 404 catch-all)
 │   │   ├── App.css
 │   │   ├── index.css                     # Global styles, CSS vars, fonts
+│   │   ├── constants/
+│   │   │   └── site.ts                   # Shared constants (phone, address, social links)
 │   │   ├── components/
 │   │   │   ├── Header/                   # Sticky nav with NavLink
 │   │   │   ├── Hero/                     # Landing hero section
-│   │   │   ├── Services/                 # 6 service cards
-│   │   │   ├── Portfolio/                # Swiper carousel (14 items)
-│   │   │   ├── About/                    # Company info + values
-│   │   │   ├── Contact/                  # Form (react-hook-form) + info
-│   │   │   ├── Footer/                   # Nav, socials, API status (dev)
+│   │   │   ├── Services/                 # 6 service cards (data.tsx + Services.tsx)
+│   │   │   ├── Portfolio/                # Swiper carousel (data.ts + Portfolio.tsx)
+│   │   │   ├── About/                    # Company info + values (data.tsx + About.tsx)
+│   │   │   ├── Contact/                  # Form (react-hook-form + Turnstile) + info
+│   │   │   ├── Footer/                   # Brand, socials, API status (dev only)
 │   │   │   └── ScrollToTop.tsx           # Scroll reset on route change
 │   │   ├── pages/                        # Route page wrappers
 │   │   │   ├── HomePage.tsx              # /
 │   │   │   ├── ServiciosPage.tsx         # /servicios
 │   │   │   ├── PortfolioPage.tsx         # /portfolio
 │   │   │   ├── NosotrosPage.tsx          # /nosotros
-│   │   │   └── ContactoPage.tsx          # /contacto
+│   │   │   ├── ContactoPage.tsx          # /contacto
+│   │   │   └── NotFoundPage.tsx          # /* (404 catch-all)
 │   │   └── assets/
-│   │       ├── logos/                    # Brand logos (4 variants)
-│   │       └── portfolio/                # Portfolio images (14 photos)
+│   │       └── logos/                    # Brand logos (4 variants)
 │   └── package.json
 ```
 
@@ -94,26 +101,31 @@ cd frontend && npx tsc --noEmit
 
 Modular architecture: each feature gets its own module folder under `src/`.
 
-- `main.ts` — bootstrap with Helmet, CORS (restricted via `CORS_ORIGIN` env var) + global `ValidationPipe(whitelist, transform)`
-- `app.module.ts` — root module, imports feature modules, global rate limiting via `@nestjs/throttler` (10 req/min, 50 req/hour per IP)
+- `main.ts` — bootstrap with Helmet, CORS (restricted via `CORS_ORIGIN` env var), global `ValidationPipe(whitelist, transform)`, body size limit (`10kb`)
+- `app.module.ts` — root module, imports feature modules + `SupabaseModule`, global rate limiting via `@nestjs/throttler` (10 req/min, 50 req/hour per IP)
+- `supabase/` — `@Global()` shared module providing `SupabaseService` to all feature modules (no need to import per-module)
 - Feature modules follow the pattern: `src/<feature>/` containing `<feature>.module.ts`, `<feature>.controller.ts`, `<feature>.service.ts`, and DTOs
 - DTOs use `class-validator` decorators for request validation (including `@MaxLength`)
+- **Error handling**: services throw NestJS exceptions (`BadRequestException`, `InternalServerErrorException`) — never return `{ success: false, error }` objects
 - Port configured via `process.env.PORT` (default 3000)
 
-**Current modules**: AppModule (health check), ContactModule (POST /contact)
+**Current modules**: AppModule (health check), SupabaseModule (global), ContactModule (POST /contact)
 
-**Security**: Helmet (HTTP headers), `@nestjs/throttler` (rate limiting), Cloudflare Turnstile (CAPTCHA)
+**Security**: Helmet (HTTP headers), `@nestjs/throttler` (rate limiting), Cloudflare Turnstile (CAPTCHA), body size limit
 
 ### Frontend (React 19 + Vite 7)
 
 Multi-page app using React Router. Each section is a separate route.
 
 - **Routing**: `BrowserRouter` in App.tsx, pages in `src/pages/`, components in `src/components/<Name>/`
-- **Styling**: CSS Modules colocated with components, global CSS vars in `index.css`
-- **Env**: `VITE_API_URL` and `VITE_TURNSTILE_SITE_KEY` in `.env`
+- **Styling**: CSS Modules colocated with components, global CSS vars in `index.css`. Never hardcode colors — always use CSS variables.
+- **Data pattern**: Component data (arrays of cards, items, etc.) extracted into colocated `data.ts`/`data.tsx` files, separate from the component TSX
+- **Shared constants**: Site-wide info (phone, address, social links) centralized in `constants/site.ts`
+- **Env**: `VITE_API_URL` and `VITE_TURNSTILE_SITE_KEY` in `.env` — accessed via `import.meta.env.VITE_*  ?? ''` (never `as string`)
 - **Dev indicator**: Footer shows API health status in dev mode only (`import.meta.env.DEV`)
 - **Libraries**: react-router-dom (routing), Swiper (carousel), react-hook-form (forms), react-icons (icons), react-turnstile (CAPTCHA)
-- **Assets**: logos in `src/assets/logos/`, portfolio images in `src/assets/portfolio/`
+- **Assets**: logos in `src/assets/logos/`, portfolio images in `public/portfolio/` (served statically, not bundled)
+- **CSP**: Content Security Policy defined via `<meta>` tag in `index.html` — update it when adding new external resources
 
 ### API Contract
 
@@ -126,8 +138,10 @@ Multi-page app using React Router. Each section is a separate route.
 
 - **Backend**: Prettier (single quotes, trailing commas) + ESLint with typescript-eslint
 - **Frontend**: ESLint with react-hooks and react-refresh plugins
-- CSS Modules for component styling, CSS custom properties (brand colors) defined in `index.css`
-- Brand colors: navy `#2B3A67`, pink `#E91E7B`, gold `#F5A623`, teal `#4ECDC4`
+- CSS Modules for component styling, CSS custom properties defined in `index.css`
+- **Never hardcode colors** — always use CSS variables (`var(--color-*)`)
+- Brand colors: navy `#2B3A67` (`--color-navy`), pink `#E91E7B` (`--color-pink`), gold `#F5A623` (`--color-gold`), teal `#4ECDC4` (`--color-teal`)
+- Utility colors: `--color-slate-50/200/400/600`, `--color-error`, `--color-pink-hover`
 
 ## Debugging
 
@@ -154,9 +168,15 @@ The contact form is protected by [Cloudflare Turnstile](https://developers.cloud
 - **Helmet** (`main.ts`): HTTP security headers (X-Content-Type-Options, X-Frame-Options, HSTS, etc.)
 - **Rate limiting** (`app.module.ts`): Global 10 req/min + 50 req/hour; POST /contact stricter at 3 req/min + 10 req/hour
 - **CORS** (`main.ts`): Restricted to `CORS_ORIGIN` env var (defaults to `http://localhost:5173`)
+- **Body size limit** (`main.ts`): `express.json({ limit: '10kb' })` prevents large payload attacks
+- **CSP** (`index.html`): Content Security Policy meta tag restricts script/style/font/image/frame/connect sources
 - **Input validation**: `@MaxLength` on all DTO fields, `whitelist: true` strips unknown properties
 - **Error sanitization**: Supabase errors logged server-side only, generic messages returned to client
 - **No PII in logs**: Contact data (name, email, phone) is never written to stdout
+
+### Known Issues
+
+- **Supabase RLS not enabled**: The `contacts` table has no Row-Level Security policies. The anon key can SELECT/DELETE rows. Enable RLS in the Supabase dashboard and add an INSERT-only policy for the `anon` role.
 
 ## Task Routing Rules
 

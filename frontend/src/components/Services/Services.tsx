@@ -8,7 +8,8 @@ export default function Services() {
         <span className={styles.badge}>Nuestros Servicios</span>
         <h2 className={styles.title}>Lo que hacemos</h2>
         <p className={styles.subtitle}>
-          Cada diseño es único, pensado especialmente para vos
+          Estamos para ayudarte a que cada detalle sea exactamente como lo soñaste.
+          Te asesoramos con calidez y profesionalismo.
         </p>
         <div className={styles.grid}>
           {services.map((service) => (

@@ -6,17 +6,17 @@ export default function Hero() {
     <section className={styles.hero}>
       <div className={styles.overlay} />
       <div className={styles.content}>
-        <span className={styles.badge}>Taller de ideas · Comunicación visual</span>
+        <span className={styles.badge}>Taller Familiar de Ideas · Comunicación Visual</span>
         <h1 className={styles.title}>
           Diseño con <span className={styles.accent}>Alas</span>
         </h1>
         <p className={styles.subtitle}>
-          Creamos diseños personalizados que dan vida a tus ideas.
-          Etiquetas escolares, comerciales, diseños para eventos y mucho más.
+          Transformamos tus ideas en detalles únicos con la calidez de un taller familiar.
+          Diseños pensados para acompañar tus proyectos y momentos más especiales.
         </p>
         <p className={styles.location}>General Belgrano, Buenos Aires</p>
         <Link to="/contacto" className={styles.cta}>
-          Contactanos
+          Consultanos sin compromiso
         </Link>
       </div>
     </section>
