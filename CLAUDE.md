@@ -12,40 +12,60 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 conalas/
 ├── package.json                          # Root monorepo (npm workspaces)
 ├── CLAUDE.md
+├── README.md                             # Project readme (Spanish)
 ├── .vscode/launch.json                   # Debug Backend config
+├── .mcp.json                             # MCP server config (Supabase)
 │
 ├── backend/                              # NestJS 11 API
 │   ├── src/
 │   │   ├── main.ts                       # Bootstrap (Helmet, CORS, ValidationPipe, body limit)
-│   │   ├── app.module.ts                 # Root module (imports SupabaseModule, ThrottlerModule)
+│   │   ├── app.module.ts                 # Root module (imports all feature modules + ThrottlerModule)
 │   │   ├── app.controller.ts             # GET /health
 │   │   ├── app.service.ts
 │   │   ├── app.controller.spec.ts
 │   │   ├── supabase/                     # @Global() shared module
 │   │   │   ├── supabase.module.ts
 │   │   │   └── supabase.service.ts       # Supabase client wrapper
+│   │   ├── auth/                         # Authentication module (JWT + bcrypt)
+│   │   │   ├── auth.module.ts            # JwtModule.registerAsync, exports AuthGuard
+│   │   │   ├── auth.controller.ts        # POST /auth/login
+│   │   │   ├── auth.service.ts           # bcrypt verify + JWT sign
+│   │   │   ├── auth.guard.ts             # CanActivate guard (Bearer token)
+│   │   │   └── login.dto.ts              # { email, password } validation
 │   │   └── contact/                      # Contact feature module
 │   │       ├── contact.module.ts
-│   │       ├── contact.controller.ts     # POST /contact
-│   │       ├── contact.service.ts        # Turnstile verification + Supabase insert
-│   │       └── create-contact.dto.ts     # Validation with class-validator + @MaxLength
+│   │       ├── contact.controller.ts     # POST, GET (auth), PATCH :id (auth)
+│   │       ├── contact.service.ts        # Turnstile verification + Supabase CRUD
+│   │       ├── create-contact.dto.ts     # Validation with class-validator + @MaxLength
+│   │       ├── find-all-contacts.dto.ts  # Pagination, sorting, filtering query params
+│   │       └── update-contact.dto.ts     # { respondido: boolean }
 │   ├── test/                             # E2E tests
-│   ├── package.json
-│   └── tsconfig.json
+│   ├── vercel.json                       # Vercel deployment config
+│   ├── nest-cli.json
+│   ├── eslint.config.mjs
+│   ├── tsconfig.json
+│   ├── tsconfig.build.json
+│   └── package.json
 │
 ├── frontend/                             # React 19 + Vite 7
 │   ├── .env                              # VITE_API_URL, VITE_TURNSTILE_SITE_KEY
 │   ├── index.html                        # Entry point, CSP meta tag, favicon
 │   ├── vite.config.ts
+│   ├── vercel.json                       # Vercel rewrites (SPA fallback)
 │   ├── public/
-│   │   └── portfolio/                    # Portfolio images (14 photos, served statically)
+│   │   ├── portfolio/                    # Portfolio images (14 photos, served statically)
+│   │   ├── googlec7cd0729972b90b2.html   # Google Search Console verification
+│   │   ├── robots.txt
+│   │   └── sitemap.xml
 │   ├── src/
-│   │   ├── main.tsx                      # React entry
-│   │   ├── App.tsx                       # BrowserRouter + Routes (incl. 404 catch-all)
+│   │   ├── main.tsx                      # React entry (wraps App in AuthProvider)
+│   │   ├── App.tsx                       # BrowserRouter + Routes (public + admin + 404)
 │   │   ├── App.css
 │   │   ├── index.css                     # Global styles, CSS vars, fonts
 │   │   ├── constants/
 │   │   │   └── site.ts                   # Shared constants (phone, address, social links)
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx            # Auth state (login, logout, token in localStorage)
 │   │   ├── components/
 │   │   │   ├── Header/                   # Sticky nav with NavLink
 │   │   │   ├── Hero/                     # Landing hero section
@@ -54,14 +74,21 @@ conalas/
 │   │   │   ├── About/                    # Company info + values (data.tsx + About.tsx)
 │   │   │   ├── Contact/                  # Form (react-hook-form + Turnstile) + info
 │   │   │   ├── Footer/                   # Brand, socials, API status (dev only)
-│   │   │   └── ScrollToTop.tsx           # Scroll reset on route change
+│   │   │   ├── ScrollToTop.tsx           # Scroll reset on route change
+│   │   │   ├── PublicLayout.tsx           # Layout wrapper: Header + Outlet + Footer
+│   │   │   └── ProtectedRoute.tsx         # Redirects to /admin/login if not authenticated
 │   │   ├── pages/                        # Route page wrappers
 │   │   │   ├── HomePage.tsx              # /
 │   │   │   ├── ServiciosPage.tsx         # /servicios
 │   │   │   ├── PortfolioPage.tsx         # /portfolio
 │   │   │   ├── NosotrosPage.tsx          # /nosotros
 │   │   │   ├── ContactoPage.tsx          # /contacto
-│   │   │   └── NotFoundPage.tsx          # /* (404 catch-all)
+│   │   │   ├── NotFoundPage.tsx          # /* (404 catch-all)
+│   │   │   └── admin/                    # Admin panel pages
+│   │   │       ├── LoginPage.tsx         # /admin/login
+│   │   │       ├── LoginPage.module.css
+│   │   │       ├── ContactosPage.tsx     # /admin/contactos (list, filter, mark responded)
+│   │   │       └── ContactosPage.module.css
 │   │   └── assets/
 │   │       └── logos/                    # Brand logos (4 variants)
 │   └── package.json
@@ -109,15 +136,19 @@ Modular architecture: each feature gets its own module folder under `src/`.
 - **Error handling**: services throw NestJS exceptions (`BadRequestException`, `InternalServerErrorException`) — never return `{ success: false, error }` objects
 - Port configured via `process.env.PORT` (default 3000)
 
-**Current modules**: AppModule (health check), SupabaseModule (global), ContactModule (POST /contact)
+**Current modules**: AppModule (health check), SupabaseModule (global), AuthModule (JWT login + guard), ContactModule (CRUD + Turnstile)
 
-**Security**: Helmet (HTTP headers), `@nestjs/throttler` (rate limiting), Cloudflare Turnstile (CAPTCHA), body size limit
+**Security**: Helmet (HTTP headers), `@nestjs/throttler` (rate limiting), Cloudflare Turnstile (CAPTCHA), JWT authentication (AuthGuard), body size limit
 
 ### Frontend (React 19 + Vite 7)
 
-Multi-page app using React Router. Each section is a separate route.
+Multi-page app using React Router. Public site + admin panel behind authentication.
 
-- **Routing**: `BrowserRouter` in App.tsx, pages in `src/pages/`, components in `src/components/<Name>/`
+- **Routing**: `BrowserRouter` in App.tsx with two layout groups:
+  - **Public routes** (`PublicLayout`): `/`, `/servicios`, `/portfolio`, `/nosotros`, `/contacto` — wrapped with Header + Footer
+  - **Admin routes** (`ProtectedRoute`): `/admin/login`, `/admin/contactos` — login is public, contactos requires auth
+  - `/*` catch-all renders NotFoundPage
+- **Auth**: `AuthContext` in `src/context/AuthContext.tsx` — provides `login()`, `logout()`, `isAuthenticated`, `token`. Token stored in `localStorage` as `admin_token`. `ProtectedRoute` redirects unauthenticated users to `/admin/login`.
 - **Styling**: CSS Modules colocated with components, global CSS vars in `index.css`. Never hardcode colors — always use CSS variables.
 - **Data pattern**: Component data (arrays of cards, items, etc.) extracted into colocated `data.ts`/`data.tsx` files, separate from the component TSX
 - **Shared constants**: Site-wide info (phone, address, social links) centralized in `constants/site.ts`
@@ -125,14 +156,18 @@ Multi-page app using React Router. Each section is a separate route.
 - **Dev indicator**: Footer shows API health status in dev mode only (`import.meta.env.DEV`)
 - **Libraries**: react-router-dom (routing), Swiper (carousel), react-hook-form (forms), react-icons (icons), react-turnstile (CAPTCHA)
 - **Assets**: logos in `src/assets/logos/`, portfolio images in `public/portfolio/` (served statically, not bundled)
+- **SEO**: `robots.txt`, `sitemap.xml`, Google Search Console verification file in `public/`
 - **CSP**: Content Security Policy defined via `<meta>` tag in `index.html` — update it when adding new external resources
 
 ### API Contract
 
-| Endpoint | Method | Body | Response |
-|----------|--------|------|----------|
-| `/health` | GET | — | `{ status: boolean }` |
-| `/contact` | POST | `{ nombre, email, telefono, mensaje?, turnstileToken }` | `{ success: boolean }` |
+| Endpoint | Method | Auth | Body / Query | Response |
+|----------|--------|------|-------------|----------|
+| `/health` | GET | No | — | `{ status: boolean }` |
+| `/auth/login` | POST | No | `{ email, password }` | `{ access_token, user: { id, email, nombre } }` |
+| `/contact` | POST | No | `{ nombre, email, telefono, mensaje?, turnstileToken }` | `{ success: boolean }` |
+| `/contact` | GET | JWT | `?page, limit, sortField, sortOrder, respondido, startDate, endDate` | `{ data, total, page, limit, totalPages }` |
+| `/contact/:id` | PATCH | JWT | `{ respondido: boolean }` | `{ success: boolean }` |
 
 ## Code Style
 
@@ -157,6 +192,7 @@ The contact form is protected by [Cloudflare Turnstile](https://developers.cloud
 |-------------|-------|---------|
 | `VITE_TURNSTILE_SITE_KEY` | `frontend/.env` | Public key — identifies the widget to Cloudflare |
 | `TURNSTILE_SECRET_KEY` | `backend/.env` | Private key — backend uses it to verify tokens with Cloudflare |
+| `JWT_SECRET` | `backend/.env` | Secret for signing/verifying JWT tokens (min 32 chars) |
 | `CORS_ORIGIN` | `backend/.env` | Allowed frontend origin(s), comma-separated |
 
 **Dev keys** (always pass): Site `1x00000000000000000000AA`, Secret `1x0000000000000000000000000000000AA`
@@ -166,7 +202,8 @@ The contact form is protected by [Cloudflare Turnstile](https://developers.cloud
 ### Other Protections
 
 - **Helmet** (`main.ts`): HTTP security headers (X-Content-Type-Options, X-Frame-Options, HSTS, etc.)
-- **Rate limiting** (`app.module.ts`): Global 10 req/min + 50 req/hour; POST /contact stricter at 3 req/min + 10 req/hour
+- **JWT authentication** (`auth/`): Admin endpoints protected by `AuthGuard` (Bearer token). Tokens signed with `JWT_SECRET`, expire in 8h. Passwords hashed with bcrypt. Admin users created directly in DB (no public registration).
+- **Rate limiting** (`app.module.ts`): Global 10 req/min + 50 req/hour; POST /contact stricter at 3 req/min + 10 req/hour; POST /auth/login at 5 req/min + 20 req/hour
 - **CORS** (`main.ts`): Restricted to `CORS_ORIGIN` env var (defaults to `http://localhost:5173`)
 - **Body size limit** (`main.ts`): `express.json({ limit: '10kb' })` prevents large payload attacks
 - **CSP** (`index.html`): Content Security Policy meta tag restricts script/style/font/image/frame/connect sources
