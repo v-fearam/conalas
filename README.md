@@ -14,6 +14,7 @@ Diseño con Alas es una agencia de diseño que ofrece servicios de cartelería, 
 - **Catálogo de servicios** — Etiquetas escolares, cartelería, papelería comercial, eventos religiosos, souvenirs y vinilo
 - **Galería de portfolio** — Carrusel interactivo con imágenes de trabajos realizados
 - **Formulario de contacto** — Validación en tiempo real, protegido con CAPTCHA (Cloudflare Turnstile)
+- **Notificaciones por email** — Alerta automática por email (vía Resend) cuando se recibe una nueva consulta
 - **Panel de administración** — Login con JWT, visualización de contactos y marcado de respondidos
 - **Autenticación** — JWT con bcrypt, usuarios dados de alta directamente en la base de datos
 - **Diseño responsive** — Adaptado a móviles, tablets y escritorio
@@ -48,6 +49,7 @@ Diseño con Alas es una agencia de diseño que ofrece servicios de cartelería, 
 | Helmet | 8 | Cabeceras HTTP de seguridad |
 | class-validator | 0.14 | Validación de DTOs |
 | class-transformer | 0.5 | Transformación de datos |
+| Resend | 6 | Notificaciones por email |
 | Jest | 30 | Testing unitario y E2E |
 | Supertest | 7 | Testing de endpoints HTTP |
 
@@ -57,6 +59,7 @@ Diseño con Alas es una agencia de diseño que ofrece servicios de cartelería, 
 |---|---|
 | Supabase | Base de datos PostgreSQL |
 | Cloudflare Turnstile | Protección CAPTCHA |
+| Resend | Envío de emails transaccionales |
 | Vercel | Hosting y despliegue |
 
 ## Arquitectura
@@ -85,6 +88,11 @@ Diseño con Alas es una agencia de diseño que ofrece servicios de cartelería, 
 │                          │  │ JWT + bcrypt  │  │ │
 │                          │  └───────┬───────┘  │ │
 │                          │  ┌───────▼───────┐  │ │
+│                          │  ┌───────┼───────┐  │ │
+│                          │  │ResendModule   │  │ │
+│                          │  │ Email alerts  │  │ │
+│                          │  └───────┬───────┘  │ │
+│                          │  ┌───────▼───────┐  │ │
 │                          │  │ContactModule  │  │ │
 │                          │  │ + Turnstile   │  │ │
 │                          │  └───────┬───────┘  │ │
@@ -110,6 +118,7 @@ conalas/
 │       ├── app.module.ts     # Módulo raíz + rate limiting
 │       ├── supabase/         # Módulo global de Supabase
 │       ├── auth/             # Módulo de autenticación (JWT + bcrypt)
+│       ├── resend/           # Módulo global de notificaciones por email (Resend)
 │       └── contact/          # Módulo de contacto (controller, service, DTO)
 │
 └── frontend/                 # App React + Vite
@@ -166,6 +175,8 @@ SUPABASE_URL=tu_url_de_supabase
 SUPABASE_ANON_KEY=tu_anon_key
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 JWT_SECRET=tu_secreto_jwt_minimo_32_caracteres
+RESEND_API_KEY=re_tu_api_key
+NOTIFICATION_EMAIL=tu@email.com
 CORS_ORIGIN=http://localhost:5173
 PORT=3000
 ```
@@ -209,6 +220,19 @@ npm run build --workspace=frontend
 | `/contact` | GET | JWT | Listar todos los contactos |
 | `/contact/:id` | PATCH | JWT | Actualizar estado respondido (`{ respondido: boolean }`) |
 | `/auth/login` | POST | No | Login admin (`{ email, password }`) → `{ access_token, user }` |
+
+## Notificaciones por email
+
+Cuando se recibe una nueva consulta a través del formulario de contacto, el sistema envía automáticamente un email de alerta a la dirección configurada en `NOTIFICATION_EMAIL`. El email incluye nombre, email, teléfono y mensaje del contacto.
+
+Se utiliza [Resend](https://resend.com) como proveedor de email. Para configurarlo:
+
+1. Crear una cuenta en [resend.com](https://resend.com)
+2. Obtener una API key desde el dashboard
+3. Configurar las variables de entorno `RESEND_API_KEY` y `NOTIFICATION_EMAIL`
+4. En producción, agregar ambas como variables de entorno en Vercel
+
+> Las notificaciones son "fire-and-forget": si el envío falla, el contacto se guarda igualmente en la base de datos.
 
 ## Panel de administración
 
