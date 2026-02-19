@@ -32,6 +32,9 @@ conalas/
 │   │   │   ├── auth.service.ts           # bcrypt verify + JWT sign
 │   │   │   ├── auth.guard.ts             # CanActivate guard (Bearer token)
 │   │   │   └── login.dto.ts              # { email, password } validation
+│   │   ├── resend/                       # @Global() email notification module (Resend)
+│   │   │   ├── resend.module.ts
+│   │   │   └── resend.service.ts         # Sends contact notification emails
 │   │   └── contact/                      # Contact feature module
 │   │       ├── contact.module.ts
 │   │       ├── contact.controller.ts     # POST, GET (auth), PATCH :id (auth)
@@ -136,7 +139,7 @@ Modular architecture: each feature gets its own module folder under `src/`.
 - **Error handling**: services throw NestJS exceptions (`BadRequestException`, `InternalServerErrorException`) — never return `{ success: false, error }` objects
 - Port configured via `process.env.PORT` (default 3000)
 
-**Current modules**: AppModule (health check), SupabaseModule (global), AuthModule (JWT login + guard), ContactModule (CRUD + Turnstile)
+**Current modules**: AppModule (health check), SupabaseModule (global), ResendModule (global, email notifications), AuthModule (JWT login + guard), ContactModule (CRUD + Turnstile + email alert)
 
 **Security**: Helmet (HTTP headers), `@nestjs/throttler` (rate limiting), Cloudflare Turnstile (CAPTCHA), JWT authentication (AuthGuard), body size limit
 
@@ -193,6 +196,8 @@ The contact form is protected by [Cloudflare Turnstile](https://developers.cloud
 | `VITE_TURNSTILE_SITE_KEY` | `frontend/.env` | Public key — identifies the widget to Cloudflare |
 | `TURNSTILE_SECRET_KEY` | `backend/.env` | Private key — backend uses it to verify tokens with Cloudflare |
 | `JWT_SECRET` | `backend/.env` | Secret for signing/verifying JWT tokens (min 32 chars) |
+| `RESEND_API_KEY` | `backend/.env` | Resend API key for email notifications (optional — emails disabled if missing) |
+| `NOTIFICATION_EMAIL` | `backend/.env` | Email address that receives contact form alerts |
 | `CORS_ORIGIN` | `backend/.env` | Allowed frontend origin(s), comma-separated |
 
 **Dev keys** (always pass): Site `1x00000000000000000000AA`, Secret `1x0000000000000000000000000000000AA`

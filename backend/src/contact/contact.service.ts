@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { CreateContactDto } from './create-contact.dto';
 import { SupabaseService } from '../supabase/supabase.service';
+import { ResendService } from '../resend/resend.service';
 import { FindAllContactsDto, SortOrder } from './find-all-contacts.dto';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class ContactService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly configService: ConfigService,
+    private readonly resendService: ResendService,
   ) { }
 
   async create(dto: CreateContactDto): Promise<{ success: boolean }> {
@@ -48,6 +50,19 @@ export class ContactService {
     }
 
     this.logger.log('Contacto guardado exitosamente');
+
+    // Email notification (fire-and-forget — failure must not affect the response)
+    this.resendService
+      .sendContactNotification({
+        nombre: dto.nombre,
+        email: dto.email,
+        telefono: dto.telefono,
+        mensaje: dto.mensaje,
+      })
+      .catch((err) =>
+        this.logger.error('Error enviando notificación por email', err),
+      );
+
     return { success: true };
   }
 

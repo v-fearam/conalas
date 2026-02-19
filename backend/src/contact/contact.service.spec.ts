@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ContactService } from './contact.service';
 import { SupabaseService } from '../supabase/supabase.service';
+import { ResendService } from '../resend/resend.service';
 import { SortOrder } from './find-all-contacts.dto';
 
 // Mock global fetch
@@ -15,6 +16,7 @@ global.fetch = mockFetch;
 describe('ContactService', () => {
   let service: ContactService;
   let configService: { get: jest.Mock };
+  let resendService: { sendContactNotification: jest.Mock };
 
   // Supabase chain mocks
   let insertMock: jest.Mock;
@@ -99,11 +101,16 @@ describe('ContactService', () => {
       get: jest.fn().mockReturnValue('test-turnstile-secret'),
     };
 
+    resendService = {
+      sendContactNotification: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ContactService,
         { provide: SupabaseService, useValue: supabaseService },
         { provide: ConfigService, useValue: configService },
+        { provide: ResendService, useValue: resendService },
       ],
     }).compile();
 
@@ -137,6 +144,39 @@ describe('ContactService', () => {
           mensaje: 'Hola',
         },
       ]);
+    });
+
+    it('should trigger email notification after successful create', async () => {
+      mockFetch.mockResolvedValue({
+        json: () => Promise.resolve({ success: true }),
+      });
+      insertMock.mockResolvedValue({ error: null });
+
+      await service.create(validCreateDto);
+
+      // Allow fire-and-forget promise to resolve
+      await new Promise((r) => setImmediate(r));
+
+      expect(resendService.sendContactNotification).toHaveBeenCalledWith({
+        nombre: 'Juan',
+        email: 'juan@test.com',
+        telefono: '11-1234-5678',
+        mensaje: 'Hola',
+      });
+    });
+
+    it('should not fail if email notification throws', async () => {
+      mockFetch.mockResolvedValue({
+        json: () => Promise.resolve({ success: true }),
+      });
+      insertMock.mockResolvedValue({ error: null });
+      resendService.sendContactNotification.mockRejectedValue(
+        new Error('Email failed'),
+      );
+
+      const result = await service.create(validCreateDto);
+
+      expect(result).toEqual({ success: true });
     });
 
     it('should throw BadRequestException when turnstile fails', async () => {

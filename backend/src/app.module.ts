@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ContactModule } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
+import { ResendModule } from './resend/resend.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
       ],
     }),
     SupabaseModule,
+    ResendModule,
     AuthModule,
     ContactModule,
   ],
