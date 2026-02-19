@@ -14,6 +14,8 @@ Diseño con Alas es una agencia de diseño que ofrece servicios de cartelería, 
 - **Catálogo de servicios** — Etiquetas escolares, cartelería, papelería comercial, eventos religiosos, souvenirs y vinilo
 - **Galería de portfolio** — Carrusel interactivo con imágenes de trabajos realizados
 - **Formulario de contacto** — Validación en tiempo real, protegido con CAPTCHA (Cloudflare Turnstile)
+- **Panel de administración** — Login con JWT, visualización de contactos y marcado de respondidos
+- **Autenticación** — JWT con bcrypt, usuarios dados de alta directamente en la base de datos
 - **Diseño responsive** — Adaptado a móviles, tablets y escritorio
 - **Página 404** personalizada para rutas inexistentes
 - **Health check** — Indicador de estado del API visible en modo desarrollo
@@ -41,6 +43,8 @@ Diseño con Alas es una agencia de diseño que ofrece servicios de cartelería, 
 | NestJS | 11 | Framework de API |
 | TypeScript | 5.7 | Tipado estático |
 | Supabase JS | 2 | Cliente de base de datos |
+| @nestjs/jwt | 11 | Autenticación JWT |
+| bcrypt | 6 | Hashing de contraseñas |
 | Helmet | 8 | Cabeceras HTTP de seguridad |
 | class-validator | 0.14 | Validación de DTOs |
 | class-transformer | 0.5 | Transformación de datos |
@@ -68,12 +72,18 @@ Diseño con Alas es una agencia de diseño que ofrece servicios de cartelería, 
 │  │                   │   │                     │ │
 │  │  /                │   │  GET  /health       │ │
 │  │  /servicios       │   │  POST /contact      │ │
-│  │  /portfolio       │   │                     │ │
-│  │  /nosotros        │   │  ┌───────────────┐  │ │
-│  │  /contacto        │   │  │SupabaseModule │  │ │
-│  │  /* (404)         │   │  │  (global)     │  │ │
-│  │                   │   │  └───────┬───────┘  │ │
-│  └──────────────────┘   │          │          │ │
+│  │  /portfolio       │   │  GET  /contact  *   │ │
+│  │  /nosotros        │   │  PATCH /contact/:id*│ │
+│  │  /contacto        │   │  POST /auth/login   │ │
+│  │  /admin/login     │   │                     │ │
+│  │  /admin/contactos │   │  ┌───────────────┐  │ │
+│  │  /* (404)         │   │  │SupabaseModule │  │ │
+│  │                   │   │  │  (global)     │  │ │
+│  └──────────────────┘   │  └───────┬───────┘  │ │
+│                          │  ┌───────┼───────┐  │ │
+│                          │  │AuthModule     │  │ │
+│                          │  │ JWT + bcrypt  │  │ │
+│                          │  └───────┬───────┘  │ │
 │                          │  ┌───────▼───────┐  │ │
 │                          │  │ContactModule  │  │ │
 │                          │  │ + Turnstile   │  │ │
@@ -99,13 +109,15 @@ conalas/
 │       ├── main.ts           # Bootstrap (Helmet, CORS, validación)
 │       ├── app.module.ts     # Módulo raíz + rate limiting
 │       ├── supabase/         # Módulo global de Supabase
+│       ├── auth/             # Módulo de autenticación (JWT + bcrypt)
 │       └── contact/          # Módulo de contacto (controller, service, DTO)
 │
 └── frontend/                 # App React + Vite
     ├── public/portfolio/     # Imágenes del portfolio
     └── src/
-        ├── components/       # Header, Hero, Services, Portfolio, About, Contact, Footer
-        ├── pages/            # Páginas de cada ruta
+        ├── context/          # AuthContext (autenticación)
+        ├── components/       # Header, Hero, Services, Portfolio, About, Contact, Footer, AdminLayout
+        ├── pages/            # Páginas públicas + admin/
         ├── constants/        # Constantes compartidas (teléfono, redes, dirección)
         └── assets/logos/     # Logos de la marca
 ```
@@ -113,9 +125,11 @@ conalas/
 ## Seguridad
 
 - **Helmet** — Cabeceras HTTP de seguridad (X-Content-Type-Options, HSTS, etc.)
-- **Rate limiting** — 10 req/min global, 3 req/min en `/contact`
+- **Autenticación JWT** — Tokens firmados con expiración de 8 horas, contraseñas hasheadas con bcrypt
+- **Rate limiting** — 10 req/min global, 3 req/min en `/contact`, 5 req/min en `/auth/login`
 - **CORS** — Restringido al origen configurado
 - **Cloudflare Turnstile** — CAPTCHA en el formulario de contacto
+- **Endpoints protegidos** — GET/PATCH `/contact` requieren token JWT válido
 - **Content Security Policy** — CSP definido en `index.html`
 - **Validación de entrada** — `@MaxLength` en todos los campos, `whitelist: true` descarta propiedades desconocidas
 - **Límite de body** — Máximo 10KB por request
@@ -149,8 +163,9 @@ VITE_TURNSTILE_SITE_KEY=1x00000000000000000000AA
 **Backend** (`backend/.env`):
 ```env
 SUPABASE_URL=tu_url_de_supabase
-SUPABASE_KEY=tu_anon_key
+SUPABASE_ANON_KEY=tu_anon_key
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+JWT_SECRET=tu_secreto_jwt_minimo_32_caracteres
 CORS_ORIGIN=http://localhost:5173
 PORT=3000
 ```
@@ -187,10 +202,53 @@ npm run build --workspace=frontend
 
 ## API
 
-| Endpoint | Método | Descripción |
-|---|---|---|
-| `/health` | GET | Estado del servidor (`{ status: boolean }`) |
-| `/contact` | POST | Enviar consulta (`{ nombre, email, telefono, mensaje?, turnstileToken }`) |
+| Endpoint | Método | Auth | Descripción |
+|---|---|---|---|
+| `/health` | GET | No | Estado del servidor (`{ status: boolean }`) |
+| `/contact` | POST | No | Enviar consulta (`{ nombre, email, telefono, mensaje?, turnstileToken }`) |
+| `/contact` | GET | JWT | Listar todos los contactos |
+| `/contact/:id` | PATCH | JWT | Actualizar estado respondido (`{ respondido: boolean }`) |
+| `/auth/login` | POST | No | Login admin (`{ email, password }`) → `{ access_token, user }` |
+
+## Panel de administración
+
+El panel admin se accede desde `/admin/login`. Los usuarios admin se crean directamente en la tabla `admin_users` de Supabase (no hay registro público).
+
+### Configuración inicial de la base de datos
+
+Ejecutar en el SQL Editor de Supabase:
+
+```sql
+-- Tabla de usuarios admin
+CREATE TABLE admin_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  nombre TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+
+-- Agregar campos de seguimiento a contactos
+ALTER TABLE contacts
+  ADD COLUMN respondido BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN respondido_at TIMESTAMPTZ;
+```
+
+### Crear un usuario admin
+
+Generar el hash de la contraseña:
+
+```bash
+node -e "const bcrypt = require('bcrypt'); bcrypt.hash('tu-contraseña', 10).then(h => console.log(h))"
+```
+
+Insertar en Supabase:
+
+```sql
+INSERT INTO admin_users (email, password_hash, nombre)
+VALUES ('tu@email.com', '$2b$10$hash_generado', 'Tu Nombre');
+```
 
 ## Licencia
 

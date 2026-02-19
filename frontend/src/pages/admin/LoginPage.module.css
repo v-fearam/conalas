@@ -1,0 +1,105 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--color-slate-50);
+  padding: 1.5rem;
+}
+
+.form {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  text-align: center;
+  margin-bottom: 0.25rem;
+  color: var(--color-navy);
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--color-slate-600);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.field {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-navy);
+  margin-bottom: 0.4rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: var(--color-white);
+  color: var(--color-navy);
+  transition: border-color var(--transition);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-pink);
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+}
+
+.input::placeholder {
+  color: var(--color-slate-400);
+}
+
+.fieldError {
+  color: var(--color-error);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background-color: var(--color-pink);
+  transition: background-color var(--transition);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: var(--color-pink-hover);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

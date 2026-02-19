@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ContactModule } from './contact/contact.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ContactModule } from './contact/contact.module';
       ],
     }),
     SupabaseModule,
+    AuthModule,
     ContactModule,
   ],
   controllers: [AppController],
