@@ -12,7 +12,8 @@
       "Bash(npx vite:*)",
       "Bash(npm ls:*)",
       "Bash(curl:*)",
-      "Bash(npx nest build)"
+      "Bash(npx nest build)",
+      "Bash(npm run lint:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
