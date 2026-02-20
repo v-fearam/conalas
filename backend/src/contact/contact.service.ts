@@ -51,17 +51,17 @@ export class ContactService {
 
     this.logger.log('Contacto guardado exitosamente');
 
-    // Email notification (fire-and-forget — failure must not affect the response)
-    this.resendService
-      .sendContactNotification({
+    // Email notification (awaited for serverless compatibility, but failures don't affect the response)
+    try {
+      await this.resendService.sendContactNotification({
         nombre: dto.nombre,
         email: dto.email,
         telefono: dto.telefono,
         mensaje: dto.mensaje,
-      })
-      .catch((err) =>
-        this.logger.error('Error enviando notificación por email', err),
-      );
+      });
+    } catch (err) {
+      this.logger.error('Error enviando notificación por email', err);
+    }
 
     return { success: true };
   }

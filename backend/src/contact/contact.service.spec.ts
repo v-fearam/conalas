@@ -154,9 +154,6 @@ describe('ContactService', () => {
 
       await service.create(validCreateDto);
 
-      // Allow fire-and-forget promise to resolve
-      await new Promise((r) => setImmediate(r));
-
       expect(resendService.sendContactNotification).toHaveBeenCalledWith({
         nombre: 'Juan',
         email: 'juan@test.com',
