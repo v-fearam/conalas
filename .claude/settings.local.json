@@ -16,7 +16,9 @@
       "Bash(npm run lint:*)",
       "Bash(python3:*)",
       "mcp__supabase__execute_sql",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "WebFetch(domain:conalas.vercel.app)",
+      "WebFetch(domain:pagespeed.web.dev)"
     ]
   },
   "enableAllProjectMcpServers": true,

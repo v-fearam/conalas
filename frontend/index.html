@@ -8,31 +8,15 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://wtsjjfpoknzevleromam.supabase.co; frame-src https://challenges.cloudflare.com; connect-src 'self' http://localhost:* https://*.vercel.app https://challenges.cloudflare.com" />
 
-  <!-- SEO -->
-  <title>Diseño con Alas — Taller de Comunicación Visual · Bibi Lasala · General Belgrano</title>
-  <meta name="description"
-    content="Diseño con Alas — Taller de comunicación visual de Bibi Lasala en General Belgrano, Buenos Aires. Etiquetas escolares, tarjetas personales, vinilo, souvenirs para fiestas, cartelería y diseño gráfico para tu negocio y eventos especiales." />
+  <!-- SEO defaults (per-page tags managed by React SEO component) -->
   <meta name="keywords"
     content="diseño con alas, taller, comunicación visual, bibi lasala, etiquetas escolares, tarjetas personales, vinilo, fiestas, souvenirs, cartelería, diseño gráfico, general belgrano" />
-  <link rel="canonical" href="https://conalas.vercel.app/" />
   <meta name="robots" content="index, follow" />
 
-  <!-- Open Graph (Facebook, WhatsApp) -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Diseño con Alas — Taller de Comunicación Visual · Bibi Lasala" />
-  <meta property="og:description"
-    content="Taller de comunicación visual en General Belgrano. Etiquetas escolares, tarjetas, vinilo, souvenirs para fiestas y diseño gráfico para tu negocio." />
-  <meta property="og:url" content="https://conalas.vercel.app/" />
+  <!-- Static OG defaults (for crawlers that don't execute JS) -->
   <meta property="og:site_name" content="Diseño con Alas" />
   <meta property="og:locale" content="es_AR" />
-  <meta property="og:image" content="https://conalas.vercel.app/favicon.jpeg" />
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Diseño con Alas — Taller de Comunicación Visual · Bibi Lasala" />
-  <meta name="twitter:description"
-    content="Taller de comunicación visual en General Belgrano. Etiquetas escolares, tarjetas, vinilo, souvenirs para fiestas y diseño gráfico." />
-  <meta name="twitter:image" content="https://conalas.vercel.app/favicon.jpeg" />
 
   <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
@@ -44,11 +28,17 @@
       "description": "Taller de comunicación visual de Bibi Lasala en General Belgrano, Buenos Aires. Etiquetas escolares, tarjetas personales, vinilo, souvenirs para fiestas, cartelería y diseño gráfico.",
       "url": "https://conalas.vercel.app",
       "telephone": "+542243401378",
+      "image": "https://conalas.vercel.app/og-image.jpg",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "General Belgrano",
         "addressRegion": "Buenos Aires",
         "addressCountry": "AR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -35.7725,
+        "longitude": -58.5005
       },
       "sameAs": [
         "https://www.facebook.com/disenio.con.alas",
@@ -71,6 +61,11 @@
 
 <body>
   <div id="root"></div>
+  <noscript>
+    <p style="text-align:center;padding:4rem 1rem;font-family:sans-serif">
+      Este sitio requiere JavaScript para funcionar. Por favor, habilitá JavaScript en tu navegador.
+    </p>
+  </noscript>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
