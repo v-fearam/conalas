@@ -1,4 +1,4 @@
-import { FaTag, FaPrint, FaStore, FaChurch, FaGift, FaTshirt } from 'react-icons/fa'
+import { FaTag, FaPrint, FaStore, FaChurch, FaGift, FaTshirt, FaBezierCurve } from 'react-icons/fa'
 
 export const services = [
   {
@@ -36,5 +36,11 @@ export const services = [
     title: 'Indumentaria y Vinilo',
     description:
       'Delantales estampados, letras en vinilo recortado y cartelería en vinilo para comercios.',
+  },
+  {
+    icon: <FaBezierCurve />,
+    title: 'Diseño de Identidad Visual',
+    description:
+      'Creamos la esencia de tu marca: desde logotipos únicos hasta manuales de identidad, paletas de colores y tipografías que comunican profesionalismo.',
   },
 ]

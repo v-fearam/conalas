@@ -1,0 +1,465 @@
+.page {
+  padding: 1rem 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+.count {
+  font-size: 0.85rem;
+  color: var(--color-slate-600);
+  background-color: var(--color-slate-200);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.createBtn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background-color: var(--color-pink);
+  transition: background-color var(--transition);
+}
+
+.createBtn:hover {
+  background-color: var(--color-pink-hover);
+}
+
+.loading {
+  text-align: center;
+  color: var(--color-slate-600);
+  padding: 4rem 0;
+}
+
+.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-slate-600);
+  padding: 4rem 0;
+}
+
+/* Filters - matching Contactos pattern */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background-color: var(--color-white);
+  padding: 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-slate-200);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filterGroup:first-child {
+  flex: 1;
+  min-width: 180px;
+}
+
+.filterLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filterSelect,
+.filterInput {
+  padding: 0.5rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--color-navy);
+  background-color: var(--color-slate-50);
+  outline: none;
+  font-family: inherit;
+  transition: border-color var(--transition);
+}
+
+.filterSelect:focus,
+.filterInput:focus {
+  border-color: var(--color-pink);
+}
+
+.filterInput::placeholder {
+  color: var(--color-slate-400);
+}
+
+/* Table */
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  background: var(--color-white);
+  box-shadow: var(--glass-shadow);
+  border: 1px solid var(--glass-border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table thead {
+  background-color: var(--color-slate-50);
+}
+
+.table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--color-slate-200);
+}
+
+.table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rowInactivo {
+  opacity: 0.55;
+}
+
+.cellFoto {
+  width: 70px;
+}
+
+.thumbnail {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.thumbnailPlaceholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: var(--color-slate-100);
+}
+
+.cellTitulo {
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cellCategoria {
+  color: var(--color-slate-600);
+  white-space: nowrap;
+}
+
+.cellFecha {
+  white-space: nowrap;
+  color: var(--color-slate-600);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badgeActivo {
+  background-color: rgba(45, 212, 191, 0.15);
+  color: #0d9488;
+}
+
+.badgeInactivo {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--color-error);
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.actionBtn {
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-white);
+  background-color: var(--color-pink);
+  transition: background-color var(--transition);
+}
+
+.actionBtn:hover {
+  background-color: var(--color-pink-hover);
+}
+
+.actionBtnUndo {
+  background-color: var(--color-slate-400);
+}
+
+.actionBtnUndo:hover {
+  background-color: var(--color-slate-600);
+}
+
+.actionBtnDanger {
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-white);
+  background-color: var(--color-error);
+  transition: background-color var(--transition);
+}
+
+.actionBtnDanger:hover {
+  background-color: #b91c1c;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.paginationBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-slate-200);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.paginationBtn:hover:not(:disabled) {
+  border-color: var(--color-pink);
+  color: var(--color-pink);
+}
+
+.paginationBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-slate-50);
+}
+
+.pageInfo {
+  font-size: 0.875rem;
+  color: var(--color-slate-600);
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background-color: var(--color-white);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0 0 1.5rem;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--color-navy);
+  background-color: var(--color-slate-50);
+  outline: none;
+  transition: border-color var(--transition);
+  font-family: inherit;
+}
+
+.formInput:focus,
+.formTextarea:focus {
+  border-color: var(--color-pink);
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.formFileInput {
+  font-size: 0.85rem;
+  color: var(--color-slate-600);
+}
+
+.fotoPreview {
+  margin-top: 0.75rem;
+  max-width: 200px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--color-slate-200);
+}
+
+.formCheckLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+
+.formActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.cancelBtn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-slate-600);
+  background-color: var(--color-slate-100);
+  transition: background-color var(--transition);
+}
+
+.cancelBtn:hover {
+  background-color: var(--color-slate-200);
+}
+
+.submitBtn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background-color: var(--color-pink);
+  transition: background-color var(--transition);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: var(--color-pink-hover);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .cellTitulo {
+    max-width: 120px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .filters {
+    gap: 1rem;
+  }
+
+  .filterGroup {
+    flex: 1 1 calc(50% - 0.5rem);
+  }
+
+  .filterGroup:first-child {
+    flex: 1 1 100%;
+  }
+}

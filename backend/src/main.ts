@@ -10,12 +10,12 @@ async function bootstrap() {
 
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:5173'],
-    methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: false,
   });
 
   app.use(helmet());
-  app.use(express.json({ limit: '10kb' }));
+  app.use(express.json({ limit: '5mb' }));
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 

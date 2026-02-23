@@ -35,13 +35,29 @@ conalas/
 │   │   ├── resend/                       # @Global() email notification module (Resend)
 │   │   │   ├── resend.module.ts
 │   │   │   └── resend.service.ts         # Sends contact notification emails
-│   │   └── contact/                      # Contact feature module
-│   │       ├── contact.module.ts
-│   │       ├── contact.controller.ts     # POST, GET (auth), PATCH :id (auth)
-│   │       ├── contact.service.ts        # Turnstile verification + Supabase CRUD
-│   │       ├── create-contact.dto.ts     # Validation with class-validator + @MaxLength
-│   │       ├── find-all-contacts.dto.ts  # Pagination, sorting, filtering query params
-│   │       └── update-contact.dto.ts     # { respondido: boolean }
+│   │   ├── contact/                      # Contact feature module
+│   │   │   ├── contact.module.ts
+│   │   │   ├── contact.controller.ts     # POST, GET (auth), PATCH :id (auth)
+│   │   │   ├── contact.service.ts        # Turnstile verification + Supabase CRUD
+│   │   │   ├── create-contact.dto.ts     # Validation with class-validator + @MaxLength
+│   │   │   ├── find-all-contacts.dto.ts  # Pagination, sorting, filtering query params
+│   │   │   └── update-contact.dto.ts     # { respondido: boolean }
+│   │   ├── services/                     # Services feature module
+│   │   │   ├── services.module.ts
+│   │   │   ├── services.controller.ts    # GET (public), GET /admin, POST, PATCH, DELETE, PATCH /reorder (auth)
+│   │   │   ├── services.service.ts       # CRUD + in-memory cache (2h TTL)
+│   │   │   ├── services.controller.spec.ts
+│   │   │   ├── create-service.dto.ts
+│   │   │   ├── update-service.dto.ts
+│   │   │   └── find-all-services.dto.ts
+│   │   └── portfolio/                    # Portfolio feature module
+│   │       ├── portfolio.module.ts
+│   │       ├── portfolio.controller.ts   # GET (public), GET /admin, POST, PATCH, DELETE (auth, multipart)
+│   │       ├── portfolio.service.ts      # CRUD + Supabase Storage upload + in-memory cache (2h TTL)
+│   │       ├── portfolio.controller.spec.ts
+│   │       ├── create-portfolio.dto.ts
+│   │       ├── update-portfolio.dto.ts
+│   │       └── find-all-portfolio.dto.ts
 │   ├── test/                             # E2E tests
 │   ├── vercel.json                       # Vercel deployment config
 │   ├── nest-cli.json
@@ -56,7 +72,7 @@ conalas/
 │   ├── vite.config.ts
 │   ├── vercel.json                       # Vercel rewrites (SPA fallback)
 │   ├── public/
-│   │   ├── portfolio/                    # Portfolio images (14 photos, served statically)
+│   │   ├── portfolio/                    # Legacy portfolio images (migrated to Supabase Storage)
 │   │   ├── googlec7cd0729972b90b2.html   # Google Search Console verification
 │   │   ├── robots.txt
 │   │   └── sitemap.xml
@@ -72,13 +88,15 @@ conalas/
 │   │   ├── components/
 │   │   │   ├── Header/                   # Sticky nav with NavLink
 │   │   │   ├── Hero/                     # Landing hero section
-│   │   │   ├── Services/                 # 6 service cards (data.tsx + Services.tsx)
-│   │   │   ├── Portfolio/                # Swiper carousel (data.ts + Portfolio.tsx)
+│   │   │   │   ├── Services/                 # Service cards fetched from API (Services.tsx)
+│   │   │   ├── Portfolio/                # Swiper carousel fetched from API (Portfolio.tsx)
 │   │   │   ├── About/                    # Company info + values (data.tsx + About.tsx)
 │   │   │   ├── Contact/                  # Form (react-hook-form + Turnstile) + info
 │   │   │   ├── Footer/                   # Brand, socials, API status (dev only)
 │   │   │   ├── ScrollToTop.tsx           # Scroll reset on route change
+│   │   │   ├── SEO.tsx                    # Reusable SEO component (React 19 native meta)
 │   │   │   ├── PublicLayout.tsx           # Layout wrapper: Header + Outlet + Footer
+│   │   │   ├── AdminLayout/              # Admin layout with topbar nav + Outlet
 │   │   │   └── ProtectedRoute.tsx         # Redirects to /admin/login if not authenticated
 │   │   ├── pages/                        # Route page wrappers
 │   │   │   ├── HomePage.tsx              # /
@@ -91,7 +109,11 @@ conalas/
 │   │   │       ├── LoginPage.tsx         # /admin/login
 │   │   │       ├── LoginPage.module.css
 │   │   │       ├── ContactosPage.tsx     # /admin/contactos (list, filter, mark responded)
-│   │   │       └── ContactosPage.module.css
+│   │   │       ├── ContactosPage.module.css
+│   │   │       ├── ServiciosAdminPage.tsx     # /admin/servicios (CRUD, reorder, toggle active)
+│   │   │       ├── ServiciosAdminPage.module.css
+│   │   │       ├── PortfolioAdminPage.tsx     # /admin/portfolio (CRUD, search, pagination, file upload)
+│   │   │       └── PortfolioAdminPage.module.css
 │   │   └── assets/
 │   │       └── logos/                    # Brand logos (4 variants)
 │   └── package.json
@@ -131,7 +153,7 @@ cd frontend && npx tsc --noEmit
 
 Modular architecture: each feature gets its own module folder under `src/`.
 
-- `main.ts` — bootstrap with Helmet, CORS (restricted via `CORS_ORIGIN` env var), global `ValidationPipe(whitelist, transform)`, body size limit (`10kb`)
+- `main.ts` — bootstrap with Helmet, CORS (restricted via `CORS_ORIGIN` env var, methods: GET/POST/PATCH/DELETE/OPTIONS), global `ValidationPipe(whitelist, transform)`, body size limit (`5mb` for multipart uploads)
 - `app.module.ts` — root module, imports feature modules + `SupabaseModule`, global rate limiting via `@nestjs/throttler` (10 req/min, 50 req/hour per IP)
 - `supabase/` — `@Global()` shared module providing `SupabaseService` to all feature modules (no need to import per-module)
 - Feature modules follow the pattern: `src/<feature>/` containing `<feature>.module.ts`, `<feature>.controller.ts`, `<feature>.service.ts`, and DTOs
@@ -139,7 +161,7 @@ Modular architecture: each feature gets its own module folder under `src/`.
 - **Error handling**: services throw NestJS exceptions (`BadRequestException`, `InternalServerErrorException`) — never return `{ success: false, error }` objects
 - Port configured via `process.env.PORT` (default 3000)
 
-**Current modules**: AppModule (health check), SupabaseModule (global), ResendModule (global, email notifications), AuthModule (JWT login + guard), ContactModule (CRUD + Turnstile + email alert)
+**Current modules**: AppModule (health check), SupabaseModule (global), ResendModule (global, email notifications), AuthModule (JWT login + guard), ContactModule (CRUD + Turnstile + email alert), ServicesModule (CRUD + in-memory cache), PortfolioModule (CRUD + Supabase Storage uploads + in-memory cache)
 
 **Security**: Helmet (HTTP headers), `@nestjs/throttler` (rate limiting), Cloudflare Turnstile (CAPTCHA), JWT authentication (AuthGuard), body size limit
 
@@ -149,16 +171,16 @@ Multi-page app using React Router. Public site + admin panel behind authenticati
 
 - **Routing**: `BrowserRouter` in App.tsx with two layout groups:
   - **Public routes** (`PublicLayout`): `/`, `/servicios`, `/portfolio`, `/nosotros`, `/contacto` — wrapped with Header + Footer
-  - **Admin routes** (`ProtectedRoute`): `/admin/login`, `/admin/contactos` — login is public, contactos requires auth
+  - **Admin routes** (`ProtectedRoute`): `/admin/login`, `/admin/contactos`, `/admin/servicios`, `/admin/portfolio` — login is public, rest require auth. `/admin` redirects to `/admin/contactos`
   - `/*` catch-all renders NotFoundPage
 - **Auth**: `AuthContext` in `src/context/AuthContext.tsx` — provides `login()`, `logout()`, `isAuthenticated`, `token`. Token stored in `localStorage` as `admin_token`. `ProtectedRoute` redirects unauthenticated users to `/admin/login`.
 - **Styling**: CSS Modules colocated with components, global CSS vars in `index.css`. Never hardcode colors — always use CSS variables.
-- **Data pattern**: Component data (arrays of cards, items, etc.) extracted into colocated `data.ts`/`data.tsx` files, separate from the component TSX
+- **Data pattern**: Services and Portfolio fetch from the API with sessionStorage cache (2h TTL). Static data files (`data.ts`/`data.tsx`) used only for About section
 - **Shared constants**: Site-wide info (phone, address, social links) centralized in `constants/site.ts`
 - **Env**: `VITE_API_URL` and `VITE_TURNSTILE_SITE_KEY` in `.env` — accessed via `import.meta.env.VITE_*  ?? ''` (never `as string`)
 - **Dev indicator**: Footer shows API health status in dev mode only (`import.meta.env.DEV`)
 - **Libraries**: react-router-dom (routing), Swiper (carousel), react-hook-form (forms), react-icons (icons), react-turnstile (CAPTCHA)
-- **Assets**: logos in `src/assets/logos/`, portfolio images in `public/portfolio/` (served statically, not bundled)
+- **Assets**: logos in `src/assets/logos/`, portfolio images served from Supabase Storage (uploaded via admin)
 - **SEO**: `robots.txt`, `sitemap.xml`, Google Search Console verification file in `public/`
 - **CSP**: Content Security Policy defined via `<meta>` tag in `index.html` — update it when adding new external resources
 
@@ -171,6 +193,17 @@ Multi-page app using React Router. Public site + admin panel behind authenticati
 | `/contact` | POST | No | `{ nombre, email, telefono, mensaje?, turnstileToken }` | `{ success: boolean }` |
 | `/contact` | GET | JWT | `?page, limit, sortField, sortOrder, respondido, startDate, endDate` | `{ data, total, page, limit, totalPages }` |
 | `/contact/:id` | PATCH | JWT | `{ respondido: boolean }` | `{ success: boolean }` |
+| `/services` | GET | No | — | `ServiceData[]` (active, ordered by orden, cached 2h) |
+| `/services/admin` | GET | JWT | `?page, limit, sortField, sortOrder, activo` | `{ data, total, page, limit }` |
+| `/services` | POST | JWT | `{ titulo, descripcion, icono, orden?, activo? }` | `{ success: boolean }` |
+| `/services/:id` | PATCH | JWT | Partial `CreateServiceDto` | `{ success: boolean }` |
+| `/services/:id` | DELETE | JWT | — | `{ success: boolean }` |
+| `/services/reorder` | PATCH | JWT | `[{ id, orden }]` | `{ success: boolean }` |
+| `/portfolio` | GET | No | — | `PortfolioItem[]` (active, ordered by fecha DESC, cached 2h) |
+| `/portfolio/admin` | GET | JWT | `?page, limit, sortField, sortOrder, activo, service_id, search` | `{ data, total, page, limit }` |
+| `/portfolio` | POST | JWT | multipart: `titulo, service_id, fecha, descripcion?, activo?, foto?` | `{ success: boolean }` |
+| `/portfolio/:id` | PATCH | JWT | multipart: partial fields + optional `foto` | `{ success: boolean }` |
+| `/portfolio/:id` | DELETE | JWT | — | `{ success: boolean }` |
 
 ## Code Style
 
@@ -210,7 +243,7 @@ The contact form is protected by [Cloudflare Turnstile](https://developers.cloud
 - **JWT authentication** (`auth/`): Admin endpoints protected by `AuthGuard` (Bearer token). Tokens signed with `JWT_SECRET`, expire in 8h. Passwords hashed with bcrypt. Admin users created directly in DB (no public registration).
 - **Rate limiting** (`app.module.ts`): Global 10 req/min + 50 req/hour; POST /contact stricter at 3 req/min + 10 req/hour; POST /auth/login at 5 req/min + 20 req/hour
 - **CORS** (`main.ts`): Restricted to `CORS_ORIGIN` env var (defaults to `http://localhost:5173`)
-- **Body size limit** (`main.ts`): `express.json({ limit: '10kb' })` prevents large payload attacks
+- **Body size limit** (`main.ts`): `express.json({ limit: '5mb' })` to support image uploads
 - **CSP** (`index.html`): Content Security Policy meta tag restricts script/style/font/image/frame/connect sources
 - **Input validation**: `@MaxLength` on all DTO fields, `whitelist: true` strips unknown properties
 - **Error sanitization**: Supabase errors logged server-side only, generic messages returned to client

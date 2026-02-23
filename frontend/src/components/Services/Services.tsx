@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaTag, FaPrint, FaStore, FaChurch, FaGift, FaTshirt, FaStar } from 'react-icons/fa'
+import { FaTag, FaPrint, FaStore, FaChurch, FaGift, FaTshirt, FaStar, FaBezierCurve } from 'react-icons/fa'
 import type { IconType } from 'react-icons'
 import styles from './Services.module.css'
 
@@ -8,7 +8,7 @@ const CACHE_KEY = 'services_cache'
 const CACHE_TTL_MS = 2 * 60 * 60 * 1000 // 2 horas
 
 const iconMap: Record<string, IconType> = {
-  FaTag, FaPrint, FaStore, FaChurch, FaGift, FaTshirt, FaStar,
+  FaTag, FaPrint, FaStore, FaChurch, FaGift, FaTshirt, FaStar, FaBezierCurve,
 }
 
 interface ServiceData {
@@ -36,12 +36,11 @@ function setCachedServices(data: ServiceData[]) {
 }
 
 export default function Services() {
-  const [services, setServices] = useState<ServiceData[]>(() => getCachedServices() ?? [])
-  const [loading, setLoading] = useState(() => services.length === 0)
+  const cached = getCachedServices()
+  const [services, setServices] = useState<ServiceData[]>(cached ?? [])
+  const [loading, setLoading] = useState(cached === null)
 
   useEffect(() => {
-    if (services.length > 0) return // ya tenemos datos de caché
-
     fetch(`${API_URL}/services`)
       .then((res) => res.json())
       .then((data) => {
@@ -50,9 +49,9 @@ export default function Services() {
           setCachedServices(data)
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false))
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   if (loading || services.length === 0) return null
 

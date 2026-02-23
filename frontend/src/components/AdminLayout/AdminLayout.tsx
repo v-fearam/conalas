@@ -29,6 +29,12 @@ export default function AdminLayout() {
             >
               Servicios
             </NavLink>
+            <NavLink
+              to="/admin/portfolio"
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
+            >
+              Portfolio
+            </NavLink>
           </nav>
         </div>
         <div className={styles.userSection}>

@@ -9,6 +9,7 @@ import { ContactModule } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
 import { ResendModule } from './resend/resend.module';
 import { ServicesModule } from './services/services.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ServicesModule } from './services/services.module';
     AuthModule,
     ContactModule,
     ServicesModule,
+    PortfolioModule,
   ],
   controllers: [AppController],
   providers: [

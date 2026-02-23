@@ -1,12 +1,60 @@
+import { useState, useEffect } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
-import { portfolioItems } from './data'
 import styles from './Portfolio.module.css'
 
+const API_URL = import.meta.env.VITE_API_URL ?? ''
+const CACHE_KEY = 'portfolio_cache'
+const CACHE_TTL_MS = 2 * 60 * 60 * 1000 // 2 horas
+
+interface PortfolioItem {
+  id: string
+  titulo: string
+  descripcion: string
+  foto_url: string
+  fecha: string
+  categoria: string
+}
+
+function getCachedPortfolio(): PortfolioItem[] | null {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const { data, timestamp } = JSON.parse(raw)
+    if (Date.now() - timestamp > CACHE_TTL_MS) return null
+    return data
+  } catch {
+    return null
+  }
+}
+
+function setCachedPortfolio(data: PortfolioItem[]) {
+  sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }))
+}
+
 export default function Portfolio() {
+  const cached = getCachedPortfolio()
+  const [items, setItems] = useState<PortfolioItem[]>(cached ?? [])
+  const [loading, setLoading] = useState(cached === null)
+
+  useEffect(() => {
+    fetch(`${API_URL}/portfolio`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setItems(data)
+          setCachedPortfolio(data)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading || items.length === 0) return null
+
   return (
     <section id="portfolio" className={styles.portfolio}>
       <div className={styles.container}>
@@ -28,16 +76,20 @@ export default function Portfolio() {
           }}
           className={styles.swiper}
         >
-          {portfolioItems.map((item) => (
-            <SwiperSlide key={item.title}>
+          {items.map((item) => (
+            <SwiperSlide key={item.id}>
               <div className={styles.card}>
                 <div className={styles.cardImageWrap}>
-                  <img src={item.image} alt={item.title} className={styles.cardImage} loading="lazy" />
-                  <span className={styles.cardCategory}>{item.category}</span>
+                  {item.foto_url ? (
+                    <img src={item.foto_url} alt={item.titulo} className={styles.cardImage} loading="lazy" />
+                  ) : (
+                    <div className={styles.cardImagePlaceholder} />
+                  )}
+                  <span className={styles.cardCategory}>{item.categoria}</span>
                 </div>
                 <div className={styles.cardBody}>
-                  <h3 className={styles.cardTitle}>{item.title}</h3>
-                  <p className={styles.cardDesc}>{item.description}</p>
+                  <h3 className={styles.cardTitle}>{item.titulo}</h3>
+                  <p className={styles.cardDesc}>{item.descripcion}</p>
                 </div>
               </div>
             </SwiperSlide>
