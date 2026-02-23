@@ -245,6 +245,19 @@
   background-color: var(--color-slate-600);
 }
 
+.actionBtnShare {
+  background-color: var(--color-teal);
+  text-align: center;
+}
+
+.actionBtnShare:hover {
+  background-color: #38b2ac;
+}
+
+.actionBtnShareCopied {
+  background-color: #0d9488;
+}
+
 .actionBtnDanger {
   padding: 0.3rem 0.65rem;
   border-radius: 6px;

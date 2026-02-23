@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ScrollToTop from './components/ScrollToTop'
@@ -10,11 +11,12 @@ import PortfolioPage from './pages/PortfolioPage'
 import NosotrosPage from './pages/NosotrosPage'
 import ContactoPage from './pages/ContactoPage'
 import NotFoundPage from './pages/NotFoundPage'
-import LoginPage from './pages/admin/LoginPage'
-import ContactosPage from './pages/admin/ContactosPage'
-import ServiciosAdminPage from './pages/admin/ServiciosAdminPage'
-import PortfolioAdminPage from './pages/admin/PortfolioAdminPage'
 import './App.css'
+
+const LoginPage = lazy(() => import('./pages/admin/LoginPage'))
+const ContactosPage = lazy(() => import('./pages/admin/ContactosPage'))
+const ServiciosAdminPage = lazy(() => import('./pages/admin/ServiciosAdminPage'))
+const PortfolioAdminPage = lazy(() => import('./pages/admin/PortfolioAdminPage'))
 
 function App() {
   return (
@@ -31,8 +33,8 @@ function App() {
             <Route path="/contacto" element={<ContactoPage />} />
           </Route>
 
-          {/* Admin */}
-          <Route path="/admin/login" element={<LoginPage />} />
+          {/* Admin (lazy-loaded) */}
+          <Route path="/admin/login" element={<Suspense><LoginPage /></Suspense>} />
           <Route
             path="/admin"
             element={
@@ -42,9 +44,9 @@ function App() {
             }
           >
             <Route index element={<Navigate to="contactos" replace />} />
-            <Route path="contactos" element={<ContactosPage />} />
-            <Route path="servicios" element={<ServiciosAdminPage />} />
-            <Route path="portfolio" element={<PortfolioAdminPage />} />
+            <Route path="contactos" element={<Suspense><ContactosPage /></Suspense>} />
+            <Route path="servicios" element={<Suspense><ServiciosAdminPage /></Suspense>} />
+            <Route path="portfolio" element={<Suspense><PortfolioAdminPage /></Suspense>} />
           </Route>
 
           {/* 404 */}

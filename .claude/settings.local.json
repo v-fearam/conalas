@@ -15,7 +15,8 @@
       "Bash(npx nest build)",
       "Bash(npm run lint:*)",
       "Bash(python3:*)",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "Bash(npm run build:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

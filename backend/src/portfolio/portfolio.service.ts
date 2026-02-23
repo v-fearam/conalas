@@ -228,6 +228,8 @@ export class PortfolioService {
       return { success: true };
     }
 
+    updateData.updated_at = new Date().toISOString();
+
     const { error } = await this.supabaseService
       .getAdminClient()
       .from('portfolio')

@@ -140,6 +140,8 @@ export class ServicesService {
       return { success: true };
     }
 
+    updateData.updated_at = new Date().toISOString();
+
     const { error } = await this.supabaseService
       .getAdminClient()
       .from('services')
@@ -182,21 +184,21 @@ export class ServicesService {
   ): Promise<{ success: boolean }> {
     const client = this.supabaseService.getAdminClient();
 
-    for (const item of items) {
-      const { error } = await client
-        .from('services')
-        .update({ orden: item.orden })
-        .eq('id', item.id);
+    const results = await Promise.all(
+      items.map((item) =>
+        client
+          .from('services')
+          .update({ orden: item.orden, updated_at: new Date().toISOString() })
+          .eq('id', item.id),
+      ),
+    );
 
-      if (error) {
-        this.logger.error(
-          `Error reordenando servicio ${item.id}`,
-          error.message,
-        );
-        throw new InternalServerErrorException(
-          'No se pudieron reordenar los servicios.',
-        );
-      }
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      this.logger.error('Error reordenando servicios', failed.error.message);
+      throw new InternalServerErrorException(
+        'No se pudieron reordenar los servicios.',
+      );
     }
 
     this.invalidateCache();

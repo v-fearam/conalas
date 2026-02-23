@@ -93,8 +93,10 @@
 }
 
 .location::before {
-  content: '📍';
-  font-size: 0.9rem;
+  content: '·';
+  font-size: 1.2rem;
+  color: var(--color-pink);
+  font-weight: 700;
 }
 
 .cta {

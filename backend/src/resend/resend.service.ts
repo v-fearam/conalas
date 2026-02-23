@@ -9,6 +9,14 @@ interface ContactNotification {
   mensaje?: string;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 @Injectable()
 export class ResendService {
   private readonly logger = new Logger(ResendService.name);
@@ -39,12 +47,15 @@ export class ResendService {
       return;
     }
 
-    const { nombre, email, telefono, mensaje } = contact;
+    const safeName = escapeHtml(contact.nombre);
+    const safeEmail = escapeHtml(contact.email);
+    const safePhone = escapeHtml(contact.telefono);
+    const safeMessage = contact.mensaje ? escapeHtml(contact.mensaje) : '';
 
     const { error } = await this.resend.emails.send({
       from: 'Diseño con Alas <onboarding@resend.dev>',
       to: this.notificationEmail,
-      subject: `Nueva consulta de ${nombre}`,
+      subject: `Nueva consulta de ${safeName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2B3A67; border-bottom: 2px solid #E91E7B; padding-bottom: 10px;">
@@ -53,26 +64,26 @@ export class ResendService {
           <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #2B3A67; width: 120px;">Nombre</td>
-              <td style="padding: 8px 12px;">${nombre}</td>
+              <td style="padding: 8px 12px;">${safeName}</td>
             </tr>
             <tr style="background-color: #f8f9fa;">
               <td style="padding: 8px 12px; font-weight: bold; color: #2B3A67;">Email</td>
               <td style="padding: 8px 12px;">
-                <a href="mailto:${email}" style="color: #E91E7B;">${email}</a>
+                <a href="mailto:${safeEmail}" style="color: #E91E7B;">${safeEmail}</a>
               </td>
             </tr>
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #2B3A67;">Teléfono</td>
               <td style="padding: 8px 12px;">
-                <a href="tel:${telefono}" style="color: #E91E7B;">${telefono}</a>
+                <a href="tel:${safePhone}" style="color: #E91E7B;">${safePhone}</a>
               </td>
             </tr>
             ${
-              mensaje
+              safeMessage
                 ? `
             <tr style="background-color: #f8f9fa;">
               <td style="padding: 8px 12px; font-weight: bold; color: #2B3A67; vertical-align: top;">Mensaje</td>
-              <td style="padding: 8px 12px; white-space: pre-wrap;">${mensaje}</td>
+              <td style="padding: 8px 12px; white-space: pre-wrap;">${safeMessage}</td>
             </tr>`
                 : ''
             }

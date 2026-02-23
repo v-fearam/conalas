@@ -47,6 +47,7 @@ export default function PortfolioAdminPage() {
   const [fotoPreview, setFotoPreview] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const [filterService, setFilterService] = useState('')
   const [filterActivo, setFilterActivo] = useState('')
   const [search, setSearch] = useState('')
@@ -214,6 +215,37 @@ export default function PortfolioAdminPage() {
     }
   }
 
+  const handleShare = async (item: PortfolioItem) => {
+    const lines = [
+      item.titulo,
+      '',
+      item.descripcion ?? '',
+      '',
+      `#${item.services?.titulo?.replace(/\s+/g, '') ?? 'DiseñoConAlas'} #DiseñoConAlas #DiseñoGráfico #GeneralBelgrano`,
+    ].filter((l, i) => i === 1 || i === 3 || l)
+    const text = lines.join('\n').trim()
+
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch {
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
+
+    setCopiedId(item.id)
+    setTimeout(() => setCopiedId(null), 4000)
+
+    if (item.foto_url) {
+      window.open(item.foto_url, '_blank')
+    }
+  }
+
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00')
     return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -322,6 +354,12 @@ export default function PortfolioAdminPage() {
                       <div className={styles.actions}>
                         <button className={styles.actionBtn} onClick={() => openEdit(item)}>
                           Editar
+                        </button>
+                        <button
+                          className={`${styles.actionBtn} ${styles.actionBtnShare} ${copiedId === item.id ? styles.actionBtnShareCopied : ''}`}
+                          onClick={() => handleShare(item)}
+                        >
+                          {copiedId === item.id ? 'Texto copiado — guardá la imagen' : 'Compartir'}
                         </button>
                         <button
                           className={`${styles.actionBtn} ${item.activo ? styles.actionBtnUndo : ''}`}
