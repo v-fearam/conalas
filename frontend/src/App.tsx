@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ScrollToTop from './components/ScrollToTop'
 import PublicLayout from './components/PublicLayout'
@@ -12,6 +12,7 @@ import ContactoPage from './pages/ContactoPage'
 import NotFoundPage from './pages/NotFoundPage'
 import LoginPage from './pages/admin/LoginPage'
 import ContactosPage from './pages/admin/ContactosPage'
+import ServiciosAdminPage from './pages/admin/ServiciosAdminPage'
 import './App.css'
 
 function App() {
@@ -39,7 +40,9 @@ function App() {
               </ProtectedRoute>
             }
           >
+            <Route index element={<Navigate to="contactos" replace />} />
             <Route path="contactos" element={<ContactosPage />} />
+            <Route path="servicios" element={<ServiciosAdminPage />} />
           </Route>
 
           {/* 404 */}

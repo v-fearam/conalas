@@ -12,10 +12,41 @@
   color: var(--color-white);
 }
 
+.brandNav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .brand {
   font-family: var(--font-heading);
   font-size: 1.125rem;
   font-weight: 600;
+}
+
+.nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.navLink {
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all var(--transition);
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: var(--color-white);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navLinkActive {
+  color: var(--color-white);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .userSection {
