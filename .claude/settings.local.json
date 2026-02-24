@@ -18,7 +18,9 @@
       "mcp__supabase__execute_sql",
       "Bash(npm run build:*)",
       "WebFetch(domain:conalas.vercel.app)",
-      "WebFetch(domain:pagespeed.web.dev)"
+      "WebFetch(domain:pagespeed.web.dev)",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__list_migrations"
     ]
   },
   "enableAllProjectMcpServers": true,

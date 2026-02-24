@@ -35,7 +35,7 @@ function setCachedServices(data: ServiceData[]) {
   sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }))
 }
 
-export default function Services() {
+export default function Services({ headingTag: Heading = 'h2' }: { headingTag?: 'h1' | 'h2' }) {
   const cached = getCachedServices()
   const [services, setServices] = useState<ServiceData[]>(cached ?? [])
   const [loading, setLoading] = useState(cached === null)
@@ -59,7 +59,7 @@ export default function Services() {
     <section id="servicios" className={styles.services}>
       <div className={styles.container}>
         <span className={styles.badge}>Nuestros Servicios</span>
-        <h2 className={styles.title}>Lo que hacemos</h2>
+        <Heading className={styles.title}>Lo que hacemos</Heading>
         <p className={styles.subtitle}>
           Estamos para ayudarte a que cada detalle sea exactamente como lo soñaste.
           Te asesoramos con calidez y profesionalismo.

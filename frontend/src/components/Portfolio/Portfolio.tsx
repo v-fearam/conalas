@@ -35,7 +35,7 @@ function setCachedPortfolio(data: PortfolioItem[]) {
   sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }))
 }
 
-export default function Portfolio() {
+export default function Portfolio({ headingTag: Heading = 'h2' }: { headingTag?: 'h1' | 'h2' }) {
   const cached = getCachedPortfolio()
   const [items, setItems] = useState<PortfolioItem[]>(cached ?? [])
   const [loading, setLoading] = useState(cached === null)
@@ -59,7 +59,7 @@ export default function Portfolio() {
     <section id="portfolio" className={styles.portfolio}>
       <div className={styles.container}>
         <span className={styles.badge}>Portfolio</span>
-        <h2 className={styles.title}>Nuestros trabajos</h2>
+        <Heading className={styles.title}>Nuestros trabajos</Heading>
         <p className={styles.subtitle}>
           Una muestra de los proyectos que realizamos con dedicación y amor por lo que hacemos.
         </p>

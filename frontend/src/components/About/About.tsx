@@ -1,13 +1,13 @@
 import { values } from './data'
 import styles from './About.module.css'
 
-export default function About() {
+export default function About({ headingTag: Heading = 'h2' }: { headingTag?: 'h1' | 'h2' }) {
   return (
     <section id="nosotros" className={styles.about}>
       <div className={styles.container}>
         <div className={styles.text}>
           <span className={styles.badge}>Nuestra Historia</span>
-          <h2 className={styles.title}>Diseño con Alas: Pasión en Familia</h2>
+          <Heading className={styles.title}>Diseño con Alas: Pasión en Familia</Heading>
           <p className={styles.description}>
             Somos un taller familiar nacido en General Belgrano, impulsado por el deseo de ponerle alas a la creatividad.
             Creeremos que los mejores resultados nacen de la dedicación y el trato cercano, por eso cada proyecto que llega

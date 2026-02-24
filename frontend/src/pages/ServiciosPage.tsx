@@ -68,7 +68,7 @@ export default function ServiciosPage() {
         path="/servicios"
         jsonLd={servicesJsonLd}
       />
-      <Services />
+      <Services headingTag="h1" />
     </>
   )
 }

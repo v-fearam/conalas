@@ -15,7 +15,7 @@ interface FormData {
   mensaje: string
 }
 
-export default function Contact() {
+export default function Contact({ headingTag: Heading = 'h2' }: { headingTag?: 'h1' | 'h2' }) {
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState<string | null>(null)
@@ -63,7 +63,7 @@ export default function Contact() {
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Contacto</span>
-          <h2 className={styles.title}>Hablemos de tu proyecto</h2>
+          <Heading className={styles.title}>Hablemos de tu proyecto</Heading>
           <p className={styles.subtitle}>
             Contanos tu idea y te ayudamos a hacerla realidad
           </p>
