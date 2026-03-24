@@ -255,36 +255,44 @@ The contact form is protected by [Cloudflare Turnstile](https://developers.cloud
 
 ## Task Routing Rules
 
-When processing a user request, match it against the rules below and delegate to the appropriate skill or subagent. If multiple match, pick the most specific one. If none match, handle the task directly.
+Global skills are installed and available for all projects. When processing a user request, match it against the rules below and delegate to the appropriate skill. If multiple match, pick the most specific one. If none match, handle the task directly.
 
-### Skills (invoke via `Skill` tool)
+### Global Skills
 
 | Skill | Trigger When | Examples |
 |-------|-------------|----------|
 | `nestjs-expert` | Any work inside `backend/`: new modules, controllers, services, DTOs, guards, interceptors, pipes, middleware, DI issues, NestJS testing, NestJS debugging | "add a new endpoint", "fix dependency injection error", "create a guard for auth", "write unit tests for contact service" |
-| `ui-ux-pro-max` | UI/UX design decisions, choosing styles/palettes/fonts, building or reviewing visual components, accessibility audits, design system generation, landing page design | "choose a color palette", "review this component for UX issues", "make the hero section more engaging", "generate a design system", "check accessibility" |
+| `nestjs-best-practices` | NestJS architecture review, best practices, production patterns, security patterns | "review this module structure", "optimize dependency injection", "implement proper error handling" |
+| `ui-ux-pro-max` | UI/UX design decisions, choosing styles/palettes/fonts, building or reviewing visual components, accessibility audits, design system generation | "choose a color palette", "review this component for UX issues", "make the hero section more engaging", "check accessibility" |
 | `vercel-react-best-practices` | Writing, reviewing, or optimizing React components in `frontend/`: performance, re-renders, bundle size, data fetching, hooks patterns | "optimize this component", "reduce bundle size", "fix re-render issue", "review this React code for performance", "implement lazy loading" |
 | `postgresql-table-design` | Designing new database tables, choosing column types, defining constraints, indexing strategy, schema migrations | "design the users table", "what data type for prices", "add an index", "create a schema for orders" |
-| `supabase-postgres-best-practices` | Optimizing existing SQL queries, connection pooling, RLS policies, monitoring/diagnostics, locking issues, Supabase-specific Postgres config | "this query is slow", "set up row-level security", "configure connection pooling", "analyze query plan" |
-| `nextjs-supabase-auth` | Authentication with Supabase + Next.js: login/signup flows, auth middleware, protected routes, OAuth callbacks, session handling | "add Supabase auth", "protect this route", "implement login with Google", "set up auth middleware" |
-| `find-skills` | User asks for a capability that no installed skill covers, or explicitly asks to find/install a skill | "is there a skill for X", "find a skill for deployment", "can you do X" (when X is outside current skill coverage) |
+| `supabase-postgres-best-practices` | Optimizing existing SQL queries, connection pooling, RLS policies, monitoring/diagnostics, Supabase-specific Postgres config | "this query is slow", "set up row-level security", "configure connection pooling", "analyze query plan" |
+| `nextjs-supabase-auth` | Authentication with Supabase + Next.js: login/signup flows, auth middleware, protected routes, OAuth callbacks | "add Supabase auth", "protect this route", "implement login with Google", "set up auth middleware" |
+| `seo-audit` | SEO audits, technical SEO, on-page SEO, meta tags, structured data, ranking diagnostics | "audit the site for SEO", "why am I not ranking", "check meta tags", "add structured data" |
+| `simplify` | Code quality review, identifying duplication, refactoring opportunities, efficiency improvements | "review this code for duplication", "simplify this component", "find reuse opportunities" |
+| `prisma-cli` | Prisma CLI commands, migrations, schema setup, database management | "run a migration", "prisma generate", "prisma studio" |
+| `prisma-client-api` | Prisma Client queries, CRUD operations, filtering, transactions | "query with Prisma", "write a complex filter", "use transactions" |
+| `claude-developer-platform` | Building apps with Claude API, Anthropic SDK, or Agent SDK integration | "integrate Claude API", "use Anthropic SDK", "build an agent" |
+| `find-skills` | User asks for a capability that no installed skill covers, or explicitly asks to find/install a skill | "is there a skill for X", "find a skill for deployment", "can you do X" |
 | `keybindings-help` | Customizing Claude Code keyboard shortcuts | "rebind ctrl+s", "change the submit key", "customize keybindings" |
 
-### Subagents (invoke via `Task` tool)
+### Subagents (built-in Agent types)
 
 | Subagent | Trigger When | Examples |
 |----------|-------------|----------|
 | `Explore` | Broad codebase exploration, finding patterns across many files, understanding how a feature works end-to-end, when simple Glob/Grep won't suffice (needs 3+ queries) | "how does routing work in this project", "find all places that call the API", "understand the auth flow" |
 | `Plan` | Designing implementation strategy for non-trivial features before writing code, architectural trade-off analysis | "plan how to add user accounts", "what's the best approach to add payments" |
+| `frontend-specialist` | Specialized React/TypeScript component review, performance optimization, clean code architecture across projects | "review my React components", "optimize bundle size", "fix performance issues" |
 | `Bash` | Running shell commands: git operations, npm scripts, builds, dev servers, system tasks | "run the tests", "start the backend", "install a package", "check git log" |
 | `general-purpose` | Multi-step research tasks, searching for code across the codebase when unsure of location, complex investigations | "investigate why the build fails", "find and summarize all API endpoints", "research how Swiper is configured" |
-| `claude-code-guide` | Questions about Claude Code itself: features, settings, hooks, MCP servers, IDE integrations, Agent SDK, Anthropic API | "how do I configure hooks", "does Claude Code support X", "how to use MCP servers" |
 
 ### Routing Priority
 
-1. **Exact domain match** — If the request clearly falls within one skill's domain, use that skill.
-2. **Backend vs Frontend** — Requests about `backend/` go to `nestjs-expert`; requests about `frontend/` components/pages first check `vercel-react-best-practices` (for perf) or `ui-ux-pro-max` (for design).
-3. **Database** — Schema design goes to `postgresql-table-design`; query optimization and Supabase config go to `supabase-postgres-best-practices`.
-4. **Exploration before action** — For ambiguous requests, use `Explore` subagent first to understand the codebase, then delegate to the appropriate skill.
-5. **Direct handling** — Simple edits (rename a variable, fix a typo, add a comment) don't need delegation. Just do them.
-6. **Skill discovery** — If the user needs a capability not covered by any installed skill, use `find-skills` to search the ecosystem.
+1. **Exact skill match** — If the request clearly falls within one skill's domain, use that skill.
+2. **Backend vs Frontend** — Backend work goes to `nestjs-expert` or `nestjs-best-practices`; frontend components check `vercel-react-best-practices` (for perf), `ui-ux-pro-max` (for design), or `frontend-specialist` (for comprehensive review).
+3. **Database** — Schema design goes to `postgresql-table-design`; query optimization goes to `supabase-postgres-best-practices`.
+4. **Code quality** — Use `simplify` to review code for duplication and efficiency improvements.
+5. **SEO** — Use `seo-audit` for any SEO-related work (audits, meta tags, structured data, ranking issues).
+6. **Exploration before action** — For ambiguous requests, use `Explore` subagent first to understand the codebase, then delegate to the appropriate skill.
+7. **Direct handling** — Simple edits (rename a variable, fix a typo, add a comment) don't need delegation. Just do them.
+8. **Skill discovery** — If the user needs a capability not covered, use `find-skills` to search for additional installable skills.
